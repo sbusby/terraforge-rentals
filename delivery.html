@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Delivery Zones — Terraforge Equipment Rentals</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;width:100%;overflow-x:hidden}
+:root{
+  --bg:#0D0D0D;--surface:#141414;--surface-2:#1a1a1a;
+  --amber:#F5A500;--amber-dim:#c78600;
+  --text:#F0EDE8;--muted:#8a8580;--dim:#4a4a47;
+  --border:#2a2a28;--border-bright:#3a3a36;
+  --radius:2px;
+  --font-display:'Bebas Neue',Impact,sans-serif;
+  --font-body:'Barlow','Helvetica Neue',sans-serif;
+  --pad-x:clamp(20px,5vw,48px);
+  --content-max:1100px;
+}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:var(--font-body);font-weight:400;line-height:1.55;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  display:flex;flex-direction:column;
+  min-height:100%;
+}
+.page{
+  display:flex;flex-direction:column;
+  min-height:100%;flex:1 0 auto;
+}
+main{flex:1 0 auto;display:flex;flex-direction:column}
+main > section:last-of-type{flex:1 0 auto;display:flex;flex-direction:column;justify-content:center}
+main > section:last-of-type > .wrap{width:100%}
+
+/* ---------- Nav ---------- */
+nav.topnav{
+  background:var(--bg);border-bottom:1px solid var(--border);
+  padding:16px var(--pad-x);position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(8px);background:rgba(13,13,13,.92);
+}
+.nav-inner{
+  max-width:var(--content-max);margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.nav-logo{
+  font-family:var(--font-display);color:var(--amber);
+  font-size:clamp(1.3rem,3.5vw,1.7rem);letter-spacing:.18em;
+  text-decoration:none;white-space:nowrap;
+}
+.nav-links{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.nav-links a{
+  color:var(--text);text-decoration:none;font-size:.78rem;
+  font-weight:500;text-transform:uppercase;letter-spacing:.1em;
+  opacity:.72;transition:opacity .15s,color .15s;
+}
+.nav-links a:hover{opacity:1;color:var(--amber)}
+.nav-cta{
+  background:var(--amber);color:#0D0D0D!important;
+  padding:9px 18px;border-radius:var(--radius);
+  opacity:1!important;font-weight:700!important;
+}
+.nav-cta:hover{background:#ffc233;color:#0D0D0D!important}
+.nav-toggle{
+  display:none;background:none;border:1px solid var(--border-bright);
+  color:var(--text);padding:8px 10px;cursor:pointer;border-radius:var(--radius);
+  font-family:var(--font-body);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+}
+
+@media(max-width:820px){
+  .nav-toggle{display:block}
+  .nav-links{
+    display:none;position:absolute;top:100%;left:0;right:0;
+    background:var(--bg);border-bottom:1px solid var(--border);
+    flex-direction:column;gap:0;padding:0;
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{
+    width:100%;padding:16px var(--pad-x);
+    border-bottom:1px solid var(--border);
+    font-size:.9rem;
+  }
+  .nav-cta{border-radius:0;width:100%;text-align:center;padding:16px!important}
+}
+
+/* ---------- Generic sections ---------- */
+section{padding:clamp(48px,8vw,96px) var(--pad-x)}
+section.tight{padding:clamp(28px,5vw,56px) var(--pad-x)}
+.wrap{max-width:var(--content-max);margin:0 auto;width:100%}
+
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:400;letter-spacing:.01em;line-height:1.05}
+h1{font-size:clamp(2.5rem,8vw,5.2rem);letter-spacing:-.01em}
+h2{font-size:clamp(1.8rem,5vw,3.2rem)}
+h3{font-size:clamp(1.3rem,3.5vw,1.9rem);letter-spacing:.02em}
+h4{font-size:clamp(1.05rem,2.5vw,1.25rem);letter-spacing:.05em}
+
+p{font-size:clamp(.95rem,2vw,1.05rem);line-height:1.65;color:var(--text)}
+p.lead{font-size:clamp(1.05rem,2.4vw,1.2rem);color:var(--text);max-width:60ch}
+
+.eyebrow{
+  font-family:var(--font-body);font-size:.72rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.25em;color:var(--amber);
+  margin-bottom:16px;display:block;
+}
+.rule{height:1px;background:var(--border);margin:clamp(28px,5vw,56px) 0;border:0}
+a{color:var(--amber)}a:hover{color:#ffc233}
+.muted{color:var(--muted)}
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-block;padding:14px 28px;border-radius:var(--radius);
+  font-family:var(--font-body);font-weight:700;font-size:.82rem;
+  text-transform:uppercase;letter-spacing:.14em;text-decoration:none;
+  transition:background .15s,color .15s,transform .1s;cursor:pointer;border:0;
+  line-height:1;
+}
+.btn-primary{background:var(--amber);color:#0D0D0D}
+.btn-primary:hover{background:#ffc233;color:#0D0D0D}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border-bright)}
+.btn-ghost:hover{border-color:var(--amber);color:var(--amber)}
+
+/* ---------- Hero ---------- */
+.hero{
+  padding:clamp(56px,10vw,128px) var(--pad-x);
+  background:
+    radial-gradient(1200px 500px at 80% 0%,rgba(245,165,0,.09),transparent 60%),
+    linear-gradient(180deg,#0D0D0D 0%,#0a0a0a 100%);
+  border-bottom:1px solid var(--border);
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:"";position:absolute;inset:0;
+  background-image:linear-gradient(90deg,rgba(255,255,255,.01) 1px,transparent 1px);
+  background-size:80px 100%;pointer-events:none;
+}
+.hero-inner{position:relative;z-index:1}
+.hero h1{margin-bottom:20px;max-width:14ch}
+.hero .amber{color:var(--amber)}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
+
+/* ---------- Grid helpers ---------- */
+.grid{display:grid;gap:clamp(14px,2vw,24px)}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:820px){
+  .grid-3,.grid-4{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:560px){
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+}
+
+/* ---------- Cards ---------- */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  padding:clamp(20px,3vw,32px);border-radius:var(--radius);
+  transition:border-color .2s;
+}
+.card:hover{border-color:var(--border-bright)}
+.card h3{margin-bottom:10px}
+.card h4{margin-bottom:10px;color:var(--amber)}
+
+.stat{
+  background:var(--surface);border:1px solid var(--border);
+  padding:clamp(18px,2.5vw,28px);border-radius:var(--radius);
+}
+.stat .num{
+  font-family:var(--font-display);font-size:clamp(2rem,5vw,3rem);
+  color:var(--amber);line-height:1;display:block;margin-bottom:6px;
+}
+.stat .lbl{font-size:.75rem;text-transform:uppercase;letter-spacing:.18em;color:var(--muted)}
+
+/* ---------- Process / Steps ---------- */
+.step{position:relative;padding-left:56px}
+.step .n{
+  position:absolute;left:0;top:0;
+  font-family:var(--font-display);font-size:2.2rem;color:var(--amber);
+  width:40px;line-height:1;
+}
+.step h4{margin-bottom:6px}
+
+/* ---------- Pricing table ---------- */
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:640px){.price-grid{grid-template-columns:1fr}}
+.price{
+  background:var(--surface);border:1px solid var(--border);
+  padding:clamp(20px,3vw,32px);border-radius:var(--radius);text-align:center;
+}
+.price .term{font-size:.72rem;text-transform:uppercase;letter-spacing:.22em;color:var(--muted);margin-bottom:10px}
+.price .amt{font-family:var(--font-display);font-size:clamp(2.2rem,6vw,3rem);color:var(--amber);line-height:1}
+.price .amt sup{font-size:.45em;color:var(--text);margin-right:2px;vertical-align:.6em}
+.price .note{font-size:.8rem;color:var(--muted);margin-top:8px}
+.price.feature{border-color:var(--amber)}
+.price.feature .term{color:var(--amber)}
+
+/* ---------- Spec list ---------- */
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--border)}
+@media(max-width:560px){.specs{grid-template-columns:1fr}}
+.specs .row{
+  padding:14px 4px;border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;gap:12px;
+}
+.specs .row .k{color:var(--muted);font-size:.82rem;text-transform:uppercase;letter-spacing:.1em}
+.specs .row .v{color:var(--text);font-weight:500;text-align:right;font-size:.95rem}
+
+/* ---------- FAQ / Accordion ---------- */
+.faq{display:flex;flex-direction:column;gap:12px}
+.faq details{
+  background:var(--surface);border:1px solid var(--border);
+  padding:0;border-radius:var(--radius);overflow:hidden;
+}
+.faq summary{
+  padding:18px 22px;cursor:pointer;list-style:none;
+  font-weight:600;font-size:clamp(.98rem,2vw,1.08rem);
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--amber);font-size:1.4rem;line-height:1;transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq .body{padding:0 22px 22px;color:var(--muted);line-height:1.65}
+.faq .body p+p{margin-top:10px}
+
+/* ---------- Delivery calculator ---------- */
+.calc{
+  background:var(--surface);border:1px solid var(--border);
+  padding:clamp(22px,3vw,32px);border-radius:var(--radius);
+  max-width:520px;
+}
+.calc label{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.15em;color:var(--muted);margin-bottom:10px}
+.calc input{
+  width:100%;background:#0a0a0a;border:1px solid var(--border-bright);
+  color:var(--text);font-family:var(--font-body);font-size:1.05rem;
+  padding:14px 16px;border-radius:var(--radius);
+}
+.calc input:focus{outline:0;border-color:var(--amber)}
+.calc .result{margin-top:18px;padding:18px;background:#0a0a0a;border:1px dashed var(--border-bright);border-radius:var(--radius);min-height:60px}
+.calc .result.hit{border-color:var(--amber);border-style:solid}
+.calc .result .zone{font-family:var(--font-display);color:var(--amber);font-size:1.6rem;line-height:1;margin-bottom:4px}
+.calc .result .sub{color:var(--muted);font-size:.88rem}
+
+/* ---------- Tags / pills ---------- */
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.pill{
+  display:inline-block;padding:5px 11px;
+  border:1px solid var(--border-bright);border-radius:999px;
+  font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);
+}
+.pill.amber{color:var(--amber);border-color:var(--amber)}
+
+/* ---------- Contact box ---------- */
+.contact-box{
+  background:var(--surface);border:1px solid var(--border);
+  padding:clamp(24px,4vw,44px);border-radius:var(--radius);text-align:center;
+}
+.contact-box .email-link{
+  display:inline-block;font-family:var(--font-display);font-size:clamp(1.4rem,4vw,2rem);
+  color:var(--amber);text-decoration:none;word-break:break-all;margin-top:10px;
+}
+.contact-box .email-link:hover{color:#ffc233;text-decoration:underline}
+
+/* ---------- Footer ---------- */
+footer{
+  background:#070707;border-top:1px solid var(--border);
+  padding:clamp(32px,5vw,56px) var(--pad-x) clamp(20px,3vw,32px);
+  margin-top:auto;flex:0 0 auto;
+}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px}
+footer .col{min-width:180px}
+footer h5{
+  font-family:var(--font-display);color:var(--amber);
+  font-size:1.1rem;letter-spacing:.15em;margin-bottom:12px;
+}
+footer a{color:var(--muted);text-decoration:none;display:block;padding:4px 0;font-size:.88rem}
+footer a:hover{color:var(--amber)}
+footer .legal{
+  border-top:1px solid var(--border);margin-top:32px;padding-top:20px;
+  font-size:.78rem;color:var(--dim);text-align:center;
+}
+
+/* ---------- Utilities ---------- */
+.center{text-align:center}
+.mb-sm{margin-bottom:12px}
+.mb-md{margin-bottom:24px}
+.mb-lg{margin-bottom:40px}
+.mt-lg{margin-top:40px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="page">
+  <nav class="topnav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo" target="_parent">TERRAFORGE</a>
+    <button class="nav-toggle" aria-label="Menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">Menu</button>
+    <div class="nav-links"><a href="/" target="_parent" class="">Home</a>
+<a href="/equipment" target="_parent" class="">Equipment</a>
+<a href="/available-attachments" target="_parent" class="">Attachments</a>
+<a href="/delivery-zones" target="_parent" class="active">Delivery</a>
+<a href="/requirements" target="_parent" class="">Requirements</a>
+<a href="/faq" target="_parent" class="">FAQ</a>
+<a href="/contact" target="_parent" class="">Contact</a>
+<a class="nav-cta" href="/book-online" target="_parent">Reserve</a>
+</div>
+  </div>
+</nav>
+  <main>
+    
+<section class="hero">
+  <div class="wrap hero-inner">
+    <span class="eyebrow">Delivery Zones</span>
+    <h1>We deliver.<br><span class="amber">You don't tow.</span></h1>
+    <p class="lead">Three zones based on driving distance from Alexandria, VA (22310). Flat-rate delivery fees — no surprises. Coverage extends up to 50 miles.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <span class="eyebrow">Check your address</span>
+    <h2 class="mb-lg">ZIP code calculator.</h2>
+    <div class="calc">
+      <label for="zipInput">Your delivery ZIP code</label>
+      <input id="zipInput" inputmode="numeric" maxlength="5" placeholder="e.g. 22043" oninput="checkZip()">
+      <div class="result" id="zipResult"><span class="muted">Enter a 5-digit ZIP to check.</span></div>
+    </div>
+    <p class="muted mt-lg" style="font-size:.85rem;max-width:60ch">Calculator uses driving-distance ZIP data for the DC/MD/VA metro. If your ZIP isn't listed, email us and we'll quote you directly — sometimes addresses are just outside the listed zones but we can still deliver.</p>
+  </div>
+</section>
+
+<section style="background:var(--surface-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="wrap">
+    <span class="eyebrow">Pricing</span>
+    <h2 class="mb-lg">Three flat rates.</h2>
+    <div class="price-grid">
+      <div class="price">
+        <div class="term">Zone 1 · 0–20 mi</div>
+        <div class="amt"><sup>$</sup>275</div>
+        <div class="note">Alexandria, Arlington, closest parts of DC + Fairfax County</div>
+      </div>
+      <div class="price">
+        <div class="term">Zone 2 · 21–35 mi</div>
+        <div class="amt"><sup>$</sup>400</div>
+        <div class="note">Much of DC metro, Montgomery Co., inner Prince William</div>
+      </div>
+      <div class="price">
+        <div class="term">Zone 3 · 36–50 mi</div>
+        <div class="amt"><sup>$</sup>525</div>
+        <div class="note">Outer Loudoun, Stafford, Baltimore suburbs, Southern MD</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="mb-md">What's included in the delivery fee?</h2>
+    <div class="grid grid-2">
+      <div class="card">
+        <h4>Drop-off</h4>
+        <p class="muted">Flatbed arrives at the start of your rental window. We place the T64 where you want it — within reason for truck access.</p>
+      </div>
+      <div class="card">
+        <h4>Pickup</h4>
+        <p class="muted">We come back at the end of your rental window. You don't transport, trailer, or load the machine.</p>
+      </div>
+    </div>
+    <p class="muted mt-lg" style="font-size:.85rem">Outside our 50-mile radius? Email us — occasionally we make longer runs at custom rates.</p>
+  </div>
+</section>
+
+<section style="background:var(--surface);border-top:1px solid var(--border)">
+  <div class="wrap center">
+    <h2 class="mb-md">Ready to book?</h2>
+    <a class="btn btn-primary" href="/book-online" target="_parent">Check availability</a>
+  </div>
+</section>
+
+<script>
+const ZONE_DATA = {"1": ["22301", "22302", "22303", "22304", "22305", "22306", "22307", "22308", "22309", "22310", "22311", "22312", "22313", "22314", "22315", "22316", "22320", "22321", "22331", "22332", "22333", "22334", "22336", "22352", "22020", "20190", "20191", "20192", "20194", "22030", "22031", "22032", "22033", "22034", "22035", "22036", "22037", "22038", "22039", "22040", "22041", "22042", "22043", "22044", "22046", "22060", "22066", "22079", "22101", "22102", "22103", "22106", "22107", "22108", "22109", "20101", "20102", "20190", "22150", "22151", "22152", "22153", "22160", "22161", "22180", "22181", "22182", "22183", "22184", "22185", "22199", "20001", "20002", "20003", "20004", "20005", "20006", "20007", "20008", "20009", "20010", "20011", "20012", "20013", "20015", "20016", "20017", "20018", "20019", "20020", "20024", "20036", "20037", "20045", "20052", "20057", "20064", "20202", "20204", "20228", "20230", "20240", "20245", "20260", "20301", "20317", "20318", "20319", "20330", "20340", "20350", "20370", "20372", "20380", "20389", "20390", "20391", "20392", "20393", "20394", "20395", "20398", "20401", "20402", "20403", "20404", "20405", "20406", "20407", "20408", "20409", "20410", "20411", "20412", "20413", "20414", "20415", "20416", "20417", "20418", "20419", "20420", "20421", "20422", "20423", "20424", "20425", "20426", "20427", "20428", "20429", "20431", "20433", "20434", "20435", "20436", "20437", "20439", "20440", "20441", "20442", "20444", "20447", "20451", "20453", "20456", "20460", "20463", "20468", "20469", "20470", "20472", "20500", "20501", "20502", "20503", "20504", "20505", "20506", "20507", "20508", "20509", "20510", "20515", "20520", "20521", "20522", "20523", "20524", "20525", "20526", "20527", "20528", "20529", "20530", "20531", "20532", "20533", "20534", "20535", "20536", "20537", "20538", "20539", "20540", "20541", "20542", "20543", "20544", "20546", "20547", "20548", "20549", "20551", "20552", "20553", "20554", "20555", "20557", "20559", "20560", "20565", "20566", "20570", "20571", "20572", "20573", "20575", "20576", "20577", "20578", "20579", "20580", "20581", "20585", "20586", "20590", "20591", "20593", "20594", "20597", "20599", "20812", "20813", "20814", "20815", "20816", "20817", "20818", "20824", "20825", "20827", "20830", "20841", "20842", "20847", "20848", "20849", "20850", "20851", "20852", "20853", "20854", "20855", "20857", "20859", "20860", "20861", "20862", "20866", "20868", "20871", "20872", "20874", "20875", "20876", "20877", "20878", "20879", "20880", "20882", "20883", "20884", "20885", "20886", "20889", "20892", "20894", "20895", "20896", "20897", "20898", "20899", "20901", "20902", "20903", "20904", "20905", "20906", "20907", "20908", "20910", "20911", "20912", "20913", "20914", "20915", "20916", "20918", "20993", "20997"], "2": ["22001", "22003", "22009", "22015", "22022", "22027", "22042", "22043", "22044", "22060", "22066", "22079", "22101", "22102", "22124", "22151", "22152", "22153", "22193", "22194", "22195", "22304", "22307", "22308", "22309", "22315", "22079", "22191", "22192", "22193", "22194", "22195", "22172", "22185", "22199", "20109", "20110", "20111", "20112", "20113", "20181", "20701", "20703", "20704", "20705", "20706", "20707", "20708", "20709", "20710", "20711", "20712", "20715", "20716", "20717", "20718", "20719", "20720", "20721", "20722", "20723", "20724", "20725", "20726", "20731", "20732", "20733", "20735", "20736", "20737", "20738", "20740", "20741", "20742", "20743", "20744", "20745", "20746", "20747", "20748", "20749", "20750", "20751", "20752", "20753", "20754", "20755", "20757", "20762", "20765", "20768", "20769", "20770", "20771", "20772", "20773", "20774", "20775", "20776", "20777", "20778", "20779", "20781", "20782", "20783", "20784", "20785", "20787", "20788", "20790", "20791", "20792", "20794", "20797", "20799", "21013", "21020", "21022", "21029", "21032", "21041", "21042", "21043", "21044", "21045", "21046", "21054", "21060", "21061", "21062", "21075", "21076", "21077", "21079", "21090", "21093", "21094", "21104", "21108", "21111", "21113", "21114", "21117", "21122", "21123", "21128", "21131", "21133", "21140", "21144", "21146", "21152", "21153", "21154", "21155", "21156", "21157", "21158", "21160", "21161", "21163", "21201", "21202", "21203", "21204", "21205", "21206", "21207", "21208", "21209", "21210", "21211", "21212", "21213", "21214", "21215", "21216", "21217", "21218", "21219", "21220", "21221", "21222", "21223", "21224", "21225", "21226", "21227", "21228", "21229", "21230", "21231", "21233", "21234", "21235", "21236", "21237", "21239", "21240", "21241", "21244", "21250", "21251", "21252", "21263", "21264", "21265", "21268", "21270", "21273", "21274", "21275", "21278", "21279", "21280", "21281", "21282", "21283", "21284", "21285", "21286", "21287", "21288", "21289", "21290", "21297", "21298"], "3": ["20607", "20608", "20611", "20612", "20613", "20615", "20616", "20617", "20618", "20619", "20620", "20621", "20622", "20623", "20624", "20625", "20626", "20627", "20628", "20629", "20630", "20632", "20634", "20636", "20637", "20639", "20640", "20643", "20645", "20646", "20650", "20653", "20656", "20657", "20658", "20659", "20660", "20662", "20664", "20667", "20670", "20674", "20675", "20676", "20677", "20678", "20680", "20682", "20684", "20685", "20686", "20687", "20688", "20689", "20690", "20692", "20693", "20695", "22025", "22026", "22125", "22134", "22135", "22172", "20117", "20119", "20120", "20121", "20122", "20124", "20129", "20130", "20131", "20132", "20134", "20135", "20137", "20139", "20140", "20141", "20142", "20143", "20144", "20146", "20147", "20148", "20149", "20158", "20159", "20160", "20163", "20164", "20165", "20166", "20167", "20168", "20169", "20170", "20171", "20172", "20175", "20176", "20177", "20178", "20180", "20182", "20184", "20185", "20186", "20187", "20188", "20189", "20197", "20198", "20601", "20602", "20603", "20604", "22630", "22711", "22712", "22713", "22714", "22715", "22716", "22718", "22719", "22720", "22722", "22723", "22724", "22725", "22726", "22727", "22728", "22729", "22730", "22731", "22732", "22733", "22734", "22735", "22736", "22737", "22738", "22739", "22740", "22741", "22742", "22743", "22746", "22747", "22748", "22749", "22756"]};
+function checkZip(){
+  const el = document.getElementById('zipInput');
+  const out = document.getElementById('zipResult');
+  const zip = (el.value || '').replace(/[^0-9]/g,'').slice(0,5);
+  el.value = zip;
+  if(zip.length < 5){
+    out.classList.remove('hit');
+    out.innerHTML = '<span class="muted">Enter a 5-digit ZIP to check.</span>';
+    return;
+  }
+  let z = null;
+  for(const k of [1,2,3]){ if(ZONE_DATA[k].includes(zip)){ z = k; break; } }
+  if(!z){
+    out.classList.remove('hit');
+    out.innerHTML = '<div class="zone">Not in our standard zones</div><div class="sub">Email us at seanbusby10@gmail.com for a custom delivery quote.</div>';
+    return;
+  }
+  const labels = {1:['Zone 1','$275','0–20 mi from Alexandria'],2:['Zone 2','$400','21–35 mi from Alexandria'],3:['Zone 3','$525','36–50 mi from Alexandria']};
+  const [zn,price,desc] = labels[z];
+  out.classList.add('hit');
+  out.innerHTML = '<div class="zone">'+zn+' · '+price+'</div><div class="sub">'+desc+'</div>';
+}
+</script>
+
+  </main>
+  <footer>
+  <div class="wrap">
+    <div class="col">
+      <h5>TERRAFORGE</h5>
+      <p class="muted" style="font-size:.88rem;max-width:260px">Bobcat T64 compact track loader rental. Delivery-only within 50 miles of Alexandria, VA.</p>
+    </div>
+    <div class="col">
+      <h5>Explore</h5>
+      <a href="/equipment" target="_parent">Equipment</a>
+      <a href="/available-attachments" target="_parent">Attachments</a>
+      <a href="/delivery-zones" target="_parent">Delivery Zones</a>
+      <a href="/faq" target="_parent">FAQ</a>
+    </div>
+    <div class="col">
+      <h5>Book</h5>
+      <a href="/book-online" target="_parent">Reserve Now</a>
+      <a href="/requirements" target="_parent">Requirements</a>
+      <a href="/terms-and-conditions" target="_parent">Terms</a>
+    </div>
+    <div class="col">
+      <h5>Contact</h5>
+      <a href="mailto:seanbusby10@gmail.com">seanbusby10@gmail.com</a>
+      <p class="muted" style="font-size:.82rem;margin-top:8px">Serving the DC Metro area.<br>Response within 24 hours.</p>
+    </div>
+  </div>
+  <div class="wrap"><div class="legal">© 2026 Terraforge Equipment Rentals. All rights reserved.</div></div>
+</footer>
+</div>
+</body>
+</html>
