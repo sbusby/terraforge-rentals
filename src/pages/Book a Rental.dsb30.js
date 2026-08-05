@@ -206,6 +206,26 @@ async function onBookClick() {
 }
 
 $w.onReady(async function () {
+  // Elements were added via the editor with default text; set every label from
+  // code so the page copy lives here alongside the pricing config.
+  const labels = {
+    delivery: 'Delivery date (Thu–Sun)',
+    return: 'Pickup date (Thu–Sun)',
+    zone: 'Delivery zone (from Alexandria, VA 22310)',
+    attachOnly: 'Attachments only — no machine',
+    forks: `Pallet Forks (+${money(CONFIG.attachments[0].dayRate)}/day)`,
+    grapple: `Brush Grapple (+${money(CONFIG.attachments[1].dayRate)}/day)`,
+    stump: `Stump Bucket (+${money(CONFIG.attachments[2].dayRate)}/day)`,
+    terms: 'I have read and agree to the Rental Terms',
+    book: 'Book Now',
+  };
+  for (const role of Object.keys(labels)) {
+    const e = el(role);
+    if (e && 'label' in e) e.label = labels[role];
+  }
+  const zoneEl = el('zone');
+  if (zoneEl && 'placeholder' in zoneEl) zoneEl.placeholder = 'Select your delivery zone';
+
   // Populate delivery-zone options from config so prices only live in one place.
   const zone = el('zone');
   if (zone) {
