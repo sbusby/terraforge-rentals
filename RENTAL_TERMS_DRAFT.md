@@ -28,14 +28,14 @@ period.
 - The full rental price — equipment, attachments, delivery fee, and applicable
   sales tax — is charged at booking.
 
-## 4. Refundable damage deposit ($500)
-- A $500 damage deposit is collected **at delivery** (card, cash, or check)
+## 4. Refundable damage deposit ($600)
+- A $600 damage deposit is collected **at delivery** (card, cash, or check)
   before the equipment is released.
 - It is refunded in full within [3] business days of pickup, provided the
   equipment and attachments are returned undamaged, with reasonable cleanliness,
   and refueled to the level at delivery.
 - Repair, cleaning, or refueling costs are deducted from the deposit. You remain
-  responsible for damage costs exceeding $500.
+  responsible for damage costs exceeding $600.
 
 ## 5. Cancellation policy
 - **48 hours or more** before your delivery day: full refund minus a **$50

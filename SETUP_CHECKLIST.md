@@ -59,7 +59,7 @@ Do them in order. Dashboard: https://manage.wix.com → your site.
 - Cancel the test order → reservation flips to `cancelled`, dates free up.
 
 ## Ongoing operations
-- **Damage deposit ($500)**: collect at delivery via the Wix mobile app
+- **Damage deposit ($600)**: collect at delivery via the Wix mobile app
   (Tap to Pay), cash, or check. Refund after return inspection.
 - **Cancellations**: refund from Dashboard → Orders per the policy
   (≥48 hrs: refund minus $50 booking fee; <48 hrs: 50%; no-show: none).
