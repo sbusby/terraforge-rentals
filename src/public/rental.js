@@ -2,8 +2,13 @@
  * TerraForge Rentals — single source of truth for pricing & booking rules.
  * Edit numbers here; both the booking page and the backend import this file.
  *
- * NOTE ON PRICES: dayRate + zone fees were derived from the old Bookings app
- * prices ($725 / $850 / $1,000 for one day incl. delivery). Adjust as needed.
+ * Prices match the advertised rates on the site (home/faq/terms pages):
+ *   Full Day $425 · Weekend (2 days) $750 · Weekly (7 days) $1,250
+ *   Delivery zones from Alexandria, VA 22310: $275 / $400 / $525
+ *   Attachments per day (stack per-day, no multi-day discount): $75 / $110 / $65
+ *   Refundable damage deposit: $600
+ * 3–6 day prices interpolate the advertised tiers (+$100/day past the weekend
+ * rate) — adjust below if you want different mid-length pricing.
  */
 
 export const TERMS_VERSION = '2026-08-05';
@@ -12,35 +17,29 @@ export const CONFIG = {
   machine: {
     key: 'bobcatT64',
     name: 'Bobcat T64 Skid Steer',
-    dayRate: 600, // rental only, delivery priced separately below
+    // Flat price by rental length in days (delivery priced separately).
+    prices: { 1: 425, 2: 750, 3: 850, 4: 950, 5: 1050, 6: 1150, 7: 1250 },
     // standard dirt bucket is included with the machine and is not rentable alone
   },
 
   // One-time fee per rental. Covers BOTH drop-off and pickup.
   zones: [
-    { key: 'zone1', label: 'Zone 1 (0–20 mi)', fee: 125 },
-    { key: 'zone2', label: 'Zone 2 (21–35 mi)', fee: 250 },
-    { key: 'zone3', label: 'Zone 3 (36–50 mi)', fee: 400 },
+    { key: 'zone1', label: 'Zone 1 (0–20 mi)', fee: 275 },
+    { key: 'zone2', label: 'Zone 2 (21–35 mi)', fee: 400 },
+    { key: 'zone3', label: 'Zone 3 (36–50 mi)', fee: 525 },
   ],
 
-  // Attachments are priced per day and get the same multi-day discount as the
-  // machine. standalone:true means it can be rented without the machine.
+  // Attachments are per day × number of days (advertised as stacking per-day).
+  // standalone:true means it can be rented without the machine.
   attachments: [
     { key: 'palletForks', name: 'Pallet Forks', dayRate: 75, standalone: true },
     { key: 'brushGrapple', name: 'Brush Grapple', dayRate: 110, standalone: true },
-    { key: 'stumpBucket', name: 'Stump Bucket', dayRate: 95, standalone: true }, // TODO: confirm price
+    { key: 'stumpBucket', name: 'Stump Bucket', dayRate: 65, standalone: true },
   ],
 
-  multiDay: {
-    // Day 1 at full rate, each additional day at this multiplier (15% off).
-    additionalDayMultiplier: 0.85,
-    // A full week costs this many day-rates (7 days for the price of 5).
-    weeklyMultiplier: 5,
-  },
-
   deposit: {
-    amount: 500,
-    note: 'Refundable damage deposit — collected at delivery (card, cash, or check), refunded after equipment inspection on return. Not charged online today.',
+    amount: 600,
+    note: 'Refundable damage deposit — collected at delivery (card, cash, or check), refunded within 5 business days after pickup per the Rental Terms. Not charged online today.',
   },
 
   cancellation: {
@@ -127,12 +126,15 @@ function round2(n) {
   return Math.round(n * 100) / 100;
 }
 
-/** Multi-day cost for any per-day rate: day 1 full, extra days discounted, week flat. */
-export function multiDayCost(dayRate, days) {
-  const m = CONFIG.multiDay;
-  if (days >= 7) return round2(dayRate * m.weeklyMultiplier);
-  if (days <= 1) return round2(dayRate);
-  return round2(dayRate + dayRate * m.additionalDayMultiplier * (days - 1));
+/** Machine price for a rental length, from the advertised flat tiers. */
+export function machineCost(days) {
+  const p = CONFIG.machine.prices;
+  return p[Math.min(Math.max(days, 1), CONFIG.rules.maxDays)];
+}
+
+/** Attachment price: advertised per-day rate × days, no discount. */
+export function attachmentCost(dayRate, days) {
+  return round2(dayRate * days);
 }
 
 /**
@@ -149,7 +151,7 @@ export function buildQuote(sel, days) {
     lines.push({
       key: CONFIG.machine.key,
       name: `${CONFIG.machine.name} — ${days} day${days > 1 ? 's' : ''}`,
-      amount: multiDayCost(CONFIG.machine.dayRate, days),
+      amount: machineCost(days),
     });
   }
   for (const key of sel.attachmentKeys || []) {
@@ -159,7 +161,7 @@ export function buildQuote(sel, days) {
     lines.push({
       key: a.key,
       name: `${a.name} — ${days} day${days > 1 ? 's' : ''}`,
-      amount: multiDayCost(a.dayRate, days),
+      amount: attachmentCost(a.dayRate, days),
     });
   }
   const zone = CONFIG.zones.find((z) => z.key === sel.zoneKey);
