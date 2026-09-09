@@ -1,43 +1,63 @@
-# Booking Page Setup (Wix Studio Editor)
+# Booking Page Setup (Wix Editor)
 
-The custom booking flow lives on the **new page** created 2026-08-05 (currently
-named "New Page", code file `src/pages/New Page.dsb30.js`). Already on it:
+The booking flow is now a single HTML embed — `booking.html` in this repo —
+exactly like every other page on the site. It draws the calendar, computes the
+quote, collects the customer's details, and calls the backend HTTP API
+(`src/backend/http-functions.js` → `/_functions/rental`) to create the Wix
+checkout. Nothing on the page needs Velo element IDs any more.
 
-- ✅ Date Picker `#deliveryPicker` (renamed)
-- ✅ Date Picker `#datePicker1` — used as the RETURN picker (no rename needed)
-- ✅ Checkbox `#checkbox1` — used as the "Attachments only (no machine)" toggle
+## One-time swap on the "Book a Rental" page (~5 min)
 
-## Elements still to add (in THIS order — numbering matters)
+1. Open the site in the Wix editor → Pages → **Book a Rental**.
+2. **Delete** the old native elements: both date pickers, the zone dropdown,
+   all five checkboxes, the quote/error text boxes, the leftover
+   "I'm a paragraph" text, and the Book Now button. (If you leave any behind,
+   page code hides them automatically once the embed exists, but deleting is
+   cleaner.)
+3. Add panel → **Embed Code → Embed HTML** (creates an HTML iframe element).
+4. In its settings choose **Code**, paste the ENTIRE contents of
+   `booking.html`, and click **Update**.
+5. Size it: stretch to full width; set height to roughly **1,900 px** on
+   desktop and **2,600 px** on mobile (the widget scrolls inside the frame if
+   it needs more room). Position it directly under the site header.
+6. Repeat the height check in the mobile editor.
+7. **Publish**.
 
-The code accepts the editor's default IDs, so **no ID renaming is needed** as
-long as the checkboxes are added in this exact order:
+## Deploying code changes
 
-| # | Element (Add panel → Input) | Default ID it will get | Set its label to |
-|---|------------------------------|------------------------|------------------|
-| 1 | Checkbox | `checkbox2` | Pallet Forks |
-| 2 | Checkbox | `checkbox3` | Brush Grapple |
-| 3 | Checkbox | `checkbox4` | Stump Bucket |
-| 4 | Checkbox | `checkbox5` | I have read and agree to the Rental Terms |
-| 5 | Radio Group (Selection) | `radioGroup1` | Delivery zone (leave options — code fills them) |
-| 6 | Text (Add panel → Text) | `text1` | (quote appears here — give it ~8 lines of room) |
-| 7 | Text | `text2` | (error message — small, red) |
-| 8 | Button | `button1` | Book Now |
+Pushing to GitHub syncs `src/` to the site but does **not** publish it. After
+every push run from the repo root:
 
-Also label the two existing date pickers ("Delivery date" / "Pickup date") and
-the `checkbox1` toggle ("Attachments only — no machine").
+```bash
+npx wix publish --source local --approve-preview
+```
 
-Friendly IDs (`#forksCheckbox`, `#zoneRadio`, `#quoteText`, …) also work if you
-prefer renaming — see the ID table at the top of `New Page.dsb30.js`.
+Sanity check: https://www.terraforgellc.com/_functions/rental must return
+`{"ok":true,...}`. A 404 means the code is not published yet.
 
-## Page settings
+## How the pieces fit
 
-1. Rename the page "New Page" → **Book a Rental** (Pages & Menu panel).
-2. Give it the URL slug `/book-a-rental`.
-3. Point the header **BOOK NOW** button and the Home page's **BOOK A RENTAL**
-   button at this page.
-4. Hide the old Wix Bookings pages (Book Online, Booking Calendar, Booking
-   Form, Service Page, My Bookings) from the site menu.
-5. **Publish** — this also syncs the page's code file to GitHub.
+| Piece | File | Job |
+|---|---|---|
+| Prices & rules | `src/public/rental.js` | single source of truth |
+| Booking service | `src/backend/rentalService.js` | availability, quote, checkout + reservation |
+| Public API | `src/backend/http-functions.js` | CORS JSON endpoint the embed calls |
+| Web methods | `src/backend/rentals.web.js` | same service for Velo page code |
+| Order events | `src/backend/events.js` | flips reservation to confirmed / cancelled |
+| Widget | `booking.html` | the UI (paste into the embed) |
+| Host bridge | `src/pages/masterPage.js` | opens checkout when the embed asks; injects SEO schema |
 
-Layout suggestion: left column = dates + zone + attachments, right column =
-quote + terms + Book Now. Prices and rules live in `src/public/rental.js`.
+When the customer clicks **Reserve & Pay**, the embed posts to the API, which
+validates dates/availability, creates the checkout with the server-side
+prices, inserts a `pending` row in the `Reservations` collection (expires in
+60 min if unpaid) and returns the checkout URL. The embed asks the host page
+to navigate there (with a direct top-window fallback). Once the order is paid,
+`events.js` marks the reservation `confirmed`, which blocks those dates in the
+calendar for everyone else.
+
+## Changing prices
+
+Edit `src/public/rental.js`, push, publish. The embed loads live prices from
+the API on every visit, but also carries a hard-coded fallback copy in its
+`FALLBACK` object — update those numbers too so the page is right even if the
+API is briefly unreachable.

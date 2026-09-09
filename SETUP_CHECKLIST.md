@@ -35,8 +35,9 @@ Do them in order. Dashboard: https://manage.wix.com → your site.
 | `agreedAt` | Date & Time |
 | `customerEmail` | Text |
 
-## 4. Booking page elements (~15 min)
-- Follow **BOOKING_PAGE_SETUP.md**.
+## 4. Booking page embed (~5 min)
+- Follow **BOOKING_PAGE_SETUP.md** — paste `booking.html` into one Embed HTML
+  element on the "Book a Rental" page and delete the old native inputs.
 
 ## 5. Retire the Wix Bookings app pages
 - Hide/remove the old Bookings pages from the menu: Booking Calendar,
@@ -50,9 +51,14 @@ Do them in order. Dashboard: https://manage.wix.com → your site.
 - Paste the content from **RENTAL_TERMS_DRAFT.md** (after your review) into the
   Terms page, replacing placeholder business details.
 
-## 7. Test end to end
-- Preview site → Book Online: verify Mon–Wed are greyed out, a booked range
-  blocks dates, quote math matches `src/public/rental.js`.
+## 7. Deploy code + test end to end
+- Pushing to GitHub updates the site's code but does NOT publish it. After a
+  push run `npx wix publish --source local --approve-preview` from the repo
+  (or click Publish in the editor).
+- Verify the API is live: https://www.terraforgellc.com/_functions/rental
+  should return JSON (`{"ok":true,...}`), not a 404.
+- Book a Rental page: verify Mon–Wed are greyed out, a booked range blocks
+  dates, quote math matches `src/public/rental.js`.
 - Make a real $ test booking (you can refund it): confirm payment is charged
   **today** (no more "Pay Later $0"), tax appears, and the reservation flips
   to `confirmed` in the CMS with an order number.
