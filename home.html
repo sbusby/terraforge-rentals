@@ -121,8 +121,8 @@ a{color:var(--amber)}a:hover{color:#ffc233}
 .muted{color:var(--muted)}
 .btn{
   display:inline-block;padding:14px 28px;border-radius:var(--radius);
-  font-family:var(--font-body);font-weight:700;font-size:.82rem;
-  text-transform:uppercase;letter-spacing:.14em;text-decoration:none;
+  font-family:var(--font-body);font-weight:700;font-size:.9rem;
+  text-decoration:none;
   transition:background .15s,color .15s;cursor:pointer;border:0;line-height:1;
 }
 .btn-primary{background:var(--amber);color:#0D0D0D}
@@ -144,24 +144,12 @@ a{color:var(--amber)}a:hover{color:#ffc233}
 }
 .hero .bg::after{
   content:"";position:absolute;inset:0;
-  background:
-    linear-gradient(90deg,rgba(10,10,10,.94) 0%,rgba(10,10,10,.82) 38%,rgba(10,10,10,.45) 70%,rgba(10,10,10,.55) 100%),
-    linear-gradient(180deg,rgba(10,10,10,.35) 0%,transparent 30%,rgba(10,10,10,.75) 100%);
+  background:rgba(10,10,10,.68);
 }
 .hero-inner{position:relative;z-index:1;max-width:var(--content-max);margin:0 auto}
 .hero h1{margin-bottom:20px;max-width:15ch}
 .hero .amber{color:var(--amber)}
-.hero p.lead{text-shadow:0 1px 8px rgba(0,0,0,.6)}
 .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
-.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:36px}
-.chip{
-  display:inline-flex;align-items:center;gap:8px;
-  border:1px solid rgba(240,237,232,.22);background:rgba(13,13,13,.55);
-  backdrop-filter:blur(4px);
-  padding:8px 14px;border-radius:999px;
-  font-size:.74rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text);
-}
-.chip::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--amber);flex:0 0 auto}
 
 /* ---------- Grids & cards ---------- */
 .grid{display:grid;gap:clamp(14px,2vw,24px)}
@@ -177,47 +165,37 @@ a{color:var(--amber)}a:hover{color:#ffc233}
 }
 .card:hover{border-color:var(--border-bright)}
 .card h4{margin-bottom:10px;color:var(--amber)}
-.stat{background:var(--surface);border:1px solid var(--border);padding:clamp(18px,2.5vw,28px);border-radius:var(--radius)}
+.stat{text-align:center}
 .stat .num{font-family:var(--font-display);font-size:clamp(2rem,5vw,3rem);color:var(--amber);line-height:1;display:block;margin-bottom:6px}
-.stat .lbl{font-size:.75rem;text-transform:uppercase;letter-spacing:.18em;color:var(--muted)}
+.stat .lbl{font-size:.82rem;color:var(--muted)}
 
 /* ---------- Comparison ---------- */
-.vs-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2vw,24px)}
-@media(max-width:720px){.vs-grid{grid-template-columns:1fr}}
-.vs{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:clamp(22px,3vw,36px)}
-.vs.them{opacity:.85}
-.vs.us{border-color:var(--amber)}
-.vs .tag{
-  display:inline-block;font-family:var(--font-body);font-size:.7rem;font-weight:700;
-  text-transform:uppercase;letter-spacing:.2em;padding:5px 12px;border-radius:999px;margin-bottom:18px;
-}
-.vs.them .tag{border:1px solid var(--border-bright);color:var(--muted)}
-.vs.us .tag{background:var(--amber);color:#0D0D0D}
-.vs ul{list-style:none}
-.vs li{
-  padding:13px 0 13px 30px;border-bottom:1px solid var(--border);
-  position:relative;color:var(--text);font-size:.97rem;line-height:1.5;
-}
-.vs li:last-child{border-bottom:0}
-.vs li::before{position:absolute;left:0;top:12px;font-weight:700}
-.vs.them li{color:var(--muted)}
-.vs.them li::before{content:"✕";color:var(--dim)}
-.vs.us li::before{content:"✓";color:var(--amber)}
+.vs-cols{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,48px)}
+@media(max-width:720px){.vs-cols{grid-template-columns:1fr}}
+.vs-col h4{margin-bottom:14px}
+.vs-col ul{list-style:none}
+.vs-col li{padding:11px 0;border-bottom:1px solid var(--border);color:var(--muted);font-size:.95rem;line-height:1.5}
+.vs-col li:last-child{border-bottom:0}
+.vs-col.us li{color:var(--text)}
 
 /* ---------- Pricing ---------- */
-.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);border-radius:var(--radius)}
 @media(max-width:640px){.price-grid{grid-template-columns:1fr}}
 .price{
-  background:var(--surface);border:1px solid var(--border);
-  padding:clamp(20px,3vw,32px);border-radius:var(--radius);text-align:center;
+  padding:clamp(20px,3vw,32px);text-align:center;
   display:flex;flex-direction:column;gap:8px;
+  border-left:1px solid var(--border);
 }
-.price .term{font-size:.72rem;text-transform:uppercase;letter-spacing:.22em;color:var(--muted)}
+.price:first-child{border-left:0}
+@media(max-width:640px){
+  .price{border-left:0;border-top:1px solid var(--border)}
+  .price:first-child{border-top:0}
+}
+.price .term{font-size:.82rem;color:var(--muted)}
+.price .popular{font-size:.72rem;color:var(--muted)}
 .price .amt{font-family:var(--font-display);font-size:clamp(2.2rem,6vw,3rem);color:var(--amber);line-height:1}
 .price .amt sup{font-size:.45em;color:var(--text);margin-right:2px;vertical-align:.6em}
-.price .note{font-size:.8rem;color:var(--muted)}
-.price.feature{border-color:var(--amber)}
-.price.feature .term{color:var(--amber)}
+.price .note{font-size:.85rem;color:var(--muted)}
 .fineprint{font-size:.88rem;color:var(--muted);margin-top:28px;max-width:75ch;line-height:1.7}
 
 /* ---------- Machine ---------- */
@@ -231,18 +209,19 @@ a{color:var(--amber)}a:hover{color:#ffc233}
 .specs{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;border-top:1px solid var(--border);margin-top:20px}
 @media(max-width:560px){.specs{grid-template-columns:1fr}}
 .specs .row{padding:12px 4px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:12px}
-.specs .row .k{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.1em}
+.specs .row .k{color:var(--muted);font-size:.8rem}
 .specs .row .v{color:var(--text);font-weight:500;text-align:right;font-size:.92rem}
 
 /* ---------- Attachments ---------- */
-.attach{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s}
-.attach:hover{border-color:var(--border-bright)}
-.attach .img{aspect-ratio:4/3;background:#fff;display:flex;align-items:center;justify-content:center}
-.attach .img img{width:100%;height:100%;object-fit:contain;display:block;mix-blend-mode:multiply}
-.attach .body{padding:clamp(18px,2.5vw,26px)}
-.attach h4{color:var(--amber);margin-bottom:6px}
-.attach .rate{font-family:var(--font-display);font-size:1.5rem;color:var(--text);margin-bottom:8px}
-.attach p{font-size:.9rem;color:var(--muted)}
+.attach-list{display:flex;flex-direction:column}
+.attach-row{display:flex;gap:20px;align-items:center;padding:20px 0;border-bottom:1px solid var(--border)}
+.attach-row:last-child{border-bottom:0}
+.attach-row .img{flex:0 0 84px;width:84px;height:84px;background:#fff;border-radius:var(--radius);overflow:hidden}
+.attach-row .img img{width:100%;height:100%;object-fit:contain;display:block;mix-blend-mode:multiply}
+.attach-row .body{flex:1}
+.attach-row h4{color:var(--amber);margin-bottom:4px}
+.attach-row .rate{font-family:var(--font-display);font-size:1.3rem;color:var(--text);margin-bottom:4px}
+.attach-row p{font-size:.9rem;color:var(--muted)}
 
 /* ---------- Steps ---------- */
 .step{position:relative;padding-left:56px}
@@ -250,19 +229,22 @@ a{color:var(--amber)}a:hover{color:#ffc233}
 .step h4{margin-bottom:6px}
 
 /* ---------- Zones ---------- */
-.zone-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:clamp(20px,3vw,30px);text-align:center}
-.zone-card .z{font-size:.72rem;text-transform:uppercase;letter-spacing:.22em;color:var(--muted);margin-bottom:8px}
-.zone-card .fee{font-family:var(--font-display);font-size:2.2rem;color:var(--amber);line-height:1;margin-bottom:6px}
-.zone-card .mi{font-size:.85rem;color:var(--muted)}
+.zone-list{display:flex;flex-direction:column}
+.zone-list .row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:16px 0;border-bottom:1px solid var(--border)}
+.zone-list .row:last-child{border-bottom:0}
+.zone-list .z{font-size:.9rem;color:var(--text);margin-bottom:4px}
+.zone-list .fee{font-family:var(--font-display);font-size:1.7rem;color:var(--amber);line-height:1;white-space:nowrap}
+.zone-list .mi{font-size:.85rem;color:var(--muted)}
 
 /* ---------- FAQ ---------- */
-.faq{display:flex;flex-direction:column;gap:12px}
-.faq details{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.faq summary{padding:18px 22px;cursor:pointer;list-style:none;font-weight:600;font-size:clamp(.98rem,2vw,1.08rem);display:flex;justify-content:space-between;align-items:center;gap:16px}
+.faq{display:flex;flex-direction:column}
+.faq details{border-bottom:1px solid var(--border)}
+.faq details:last-child{border-bottom:0}
+.faq summary{padding:18px 4px;cursor:pointer;list-style:none;font-weight:600;font-size:clamp(.98rem,2vw,1.08rem);display:flex;justify-content:space-between;align-items:center;gap:16px}
 .faq summary::-webkit-details-marker{display:none}
 .faq summary::after{content:"+";color:var(--amber);font-size:1.4rem;line-height:1;transition:transform .2s}
 .faq details[open] summary::after{transform:rotate(45deg)}
-.faq .body{padding:0 22px 22px;color:var(--muted);line-height:1.65}
+.faq .body{padding:0 4px 18px;color:var(--muted);line-height:1.65}
 
 /* ---------- Footer ---------- */
 footer{background:#070707;border-top:1px solid var(--border);padding:clamp(32px,5vw,56px) var(--pad-x) clamp(20px,3vw,32px);margin-top:auto;flex:0 0 auto}
@@ -302,14 +284,10 @@ footer .legal{border-top:1px solid var(--border);margin-top:32px;padding-top:20p
     <span class="eyebrow">Owner-Operated · Alexandria, VA · 50-Mile Delivery Radius</span>
     <h1>Rent the machine.<br><span class="amber">Skip the rental counter.</span></h1>
     <p class="lead">A late-model Bobcat T64 compact track loader, delivered to your site and picked up when you're done — including Saturdays and Sundays, when the big chains won't. Flat pricing, booked online in minutes. No trailer. No lines. No surprises at the register.</p>
+    <p class="muted" style="font-size:.82rem;margin-top:16px">Delivered and picked up Thursday through Sunday, full total including tax shown before you pay, and a $600 refundable deposit collected at delivery.</p>
     <div class="hero-ctas">
       <a class="btn btn-primary" href="https://www.terraforgellc.com/book-a-rental" target="_parent">Check availability</a>
       <a class="btn btn-ghost" href="https://www.terraforgellc.com/equipment" target="_parent">See the machine</a>
-    </div>
-    <div class="chips">
-      <span class="chip">Delivered &amp; picked up Thu–Sun</span>
-      <span class="chip">Full total incl. tax before you pay</span>
-      <span class="chip">$600 deposit — refundable, paid at delivery</span>
     </div>
   </div>
 </section>
@@ -323,30 +301,29 @@ footer .legal{border-top:1px solid var(--border);margin-top:32px;padding-top:20p
   </div>
 </section>
 
-<section style="background:var(--surface-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+<section>
   <div class="wrap">
-    <span class="eyebrow">Why TerraForge</span>
     <h2 class="mb-md">This is not the big-box rental line.</h2>
     <p class="lead mb-lg">Sunbelt and Home Depot rent equipment. We deliver a working weekend. One machine, one owner, and a booking flow that respects your time.</p>
-    <div class="vs-grid">
-      <div class="vs them">
-        <span class="tag">The typical rental counter</span>
+    <div class="vs-cols">
+      <div class="vs-col them">
+        <h4 class="muted">The typical rental counter</h4>
         <ul>
-          <li>You tow it yourself — or wait on a weekday-only delivery window</li>
-          <li>Counter lines, hold music, and a different answer every call</li>
-          <li>A quoted rate that grows fees by the time you pay</li>
-          <li>Whatever machine happens to be on the lot that morning</li>
-          <li>Weekend pickup? See you Monday.</li>
+          <li>– You tow it yourself, or wait on a weekday-only delivery window</li>
+          <li>– Counter lines, hold music, and a different answer every call</li>
+          <li>– A quoted rate that grows fees by the time you pay</li>
+          <li>– Whatever machine happens to be on the lot that morning</li>
+          <li>– Weekend pickup? See you Monday.</li>
         </ul>
       </div>
-      <div class="vs us">
-        <span class="tag">The TerraForge way</span>
+      <div class="vs-col us">
+        <h4>The TerraForge way</h4>
         <ul>
-          <li>We deliver and pick up at your site — Thursday through Sunday</li>
-          <li>Text or email the owner directly; answers within 24 hours</li>
-          <li>The price you see online is the price at checkout, tax included before you pay</li>
-          <li>One late-model T64, maintained like it's ours — because it is</li>
-          <li>Weekend delivery and weekend pickup are the core product, not a favor</li>
+          <li>– We deliver and pick up at your site, Thursday through Sunday</li>
+          <li>– Text or email the owner directly; answers within 24 hours</li>
+          <li>– The price you see online is the price at checkout, tax included before you pay</li>
+          <li>– One late-model T64, maintained like it's ours, because it is</li>
+          <li>– Weekend delivery and weekend pickup are the core product, not a favor</li>
         </ul>
       </div>
     </div>
@@ -355,18 +332,18 @@ footer .legal{border-top:1px solid var(--border);margin-top:32px;padding-top:20p
 
 <section>
   <div class="wrap">
-    <span class="eyebrow">Pricing</span>
     <h2 class="mb-md">Flat rates. Book online, see your exact total.</h2>
     <div class="price-grid">
       <div class="price">
-        <div class="term">Full Day · 24 hrs</div>
+        <div class="term">Full day · 24 hrs</div>
         <div class="amt"><sup>$</sup>425</div>
         <div class="note">Delivered in the morning, picked up the next day</div>
       </div>
-      <div class="price feature">
+      <div class="price">
         <div class="term">Weekend · Fri–Sun</div>
+        <div class="popular">Most popular</div>
         <div class="amt"><sup>$</sup>750</div>
-        <div class="note">The most popular option — two full working days</div>
+        <div class="note">Two full working days</div>
       </div>
       <div class="price">
         <div class="term">Weekly · 7 days</div>
@@ -378,13 +355,12 @@ footer .legal{border-top:1px solid var(--border);margin-top:32px;padding-top:20p
   </div>
 </section>
 
-<section style="background:var(--surface-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+<section style="border-top:1px solid var(--border)">
   <div class="wrap machine">
     <div class="photo">
       <img src="https://static.wixstatic.com/media/ee1515_eab3000dd4c148939ac45a4f5338f348~mv2.png/v1/fill/w_1200,h_750,al_c,q_82,enc_auto/t64.png" alt="Bobcat T64 compact track loader delivered to a residential job site" loading="lazy">
     </div>
     <div>
-      <span class="eyebrow">The Machine</span>
       <h2 class="mb-md">Bobcat T64. Late-model, dialed in.</h2>
       <p class="mb-md">Vertical-lift power with rubber tracks that are kind to finished lawns, an enclosed cab with AC and heat, and the HD 80" bucket included with every rental. One machine, maintained by the owner — not a fleet unit with mystery hours.</p>
       <div class="specs">
@@ -402,11 +378,10 @@ footer .legal{border-top:1px solid var(--border);margin-top:32px;padding-top:20p
 
 <section>
   <div class="wrap">
-    <span class="eyebrow">Attachments</span>
     <h2 class="mb-md">Pre-loaded on the truck. Ready when it lands.</h2>
     <p class="lead mb-lg">Add attachments at booking and they arrive with the machine. Need forks or a grapple without the T64? Attachments rent on their own, too.</p>
-    <div class="grid grid-3">
-      <div class="attach">
+    <div class="attach-list">
+      <div class="attach-row">
         <div class="img"><img src="https://static.wixstatic.com/media/ee1515_171df54bd39c4be2bb901930d03322ad~mv2.webp" alt="42-inch step-through pallet forks attachment" loading="lazy"></div>
         <div class="body">
           <h4>Pallet Forks</h4>
@@ -414,7 +389,7 @@ footer .legal{border-top:1px solid var(--border);margin-top:32px;padding-top:20p
           <p>42" step-through frame rated to 4,000 lb. Pallets, lumber, stone — moved, not dragged.</p>
         </div>
       </div>
-      <div class="attach">
+      <div class="attach-row">
         <div class="img"><img src="https://static.wixstatic.com/media/ee1515_c6aab9a4247c4b54b29ba2b1c2a22cff~mv2.jpg" alt="Jenkins 76-inch brush grapple attachment" loading="lazy"></div>
         <div class="body">
           <h4>Brush Grapple</h4>
@@ -422,7 +397,7 @@ footer .legal{border-top:1px solid var(--border);margin-top:32px;padding-top:20p
           <p>Jenkins 76" — brush, logs, storm debris, demo piles. The one most customers add.</p>
         </div>
       </div>
-      <div class="attach">
+      <div class="attach-row">
         <div class="img"><img src="https://static.wixstatic.com/media/ee1515_275657c5c7544390ae44d2ad17a9d6cf~mv2.webp" alt="AR400 steel stump bucket attachment" loading="lazy"></div>
         <div class="body">
           <h4>Stump Bucket</h4>
@@ -434,9 +409,8 @@ footer .legal{border-top:1px solid var(--border);margin-top:32px;padding-top:20p
   </div>
 </section>
 
-<section style="background:var(--surface-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+<section style="border-top:1px solid var(--border)">
   <div class="wrap">
-    <span class="eyebrow">How it works</span>
     <h2 class="mb-lg">Four steps. No games.</h2>
     <div class="grid grid-4">
       <div class="step"><span class="n">01</span><h4>Book online</h4><p class="muted">Pick delivery and pickup dates (Thu–Sun), choose attachments, and pay your exact total — delivery and tax included.</p></div>
@@ -449,21 +423,19 @@ footer .legal{border-top:1px solid var(--border);margin-top:32px;padding-top:20p
 
 <section>
   <div class="wrap">
-    <span class="eyebrow">Service area</span>
     <h2 class="mb-md">Fifty miles around Alexandria.</h2>
     <p class="lead mb-lg">One flat delivery fee covers drop-off and pickup. DC, Arlington, Fairfax, Springfield, Woodbridge, and everywhere in between.</p>
-    <div class="grid grid-3">
-      <div class="zone-card"><div class="z">Zone 1 · 0–20 mi</div><div class="fee">$275</div><div class="mi">Alexandria · Arlington · DC · Springfield</div></div>
-      <div class="zone-card"><div class="z">Zone 2 · 21–35 mi</div><div class="fee">$400</div><div class="mi">Fairfax · Woodbridge · Bowie · Rockville</div></div>
-      <div class="zone-card"><div class="z">Zone 3 · 36–50 mi</div><div class="fee">$525</div><div class="mi">Manassas · Frederick · Waldorf · Leesburg</div></div>
+    <div class="zone-list">
+      <div class="row"><div><div class="z">Zone 1 · 0–20 mi</div><div class="mi">Alexandria · Arlington · DC · Springfield</div></div><div class="fee">$275</div></div>
+      <div class="row"><div><div class="z">Zone 2 · 21–35 mi</div><div class="mi">Fairfax · Woodbridge · Bowie · Rockville</div></div><div class="fee">$400</div></div>
+      <div class="row"><div><div class="z">Zone 3 · 36–50 mi</div><div class="mi">Manassas · Frederick · Waldorf · Leesburg</div></div><div class="fee">$525</div></div>
     </div>
     <p class="fineprint">Not sure which zone you're in? <a href="https://www.terraforgellc.com/delivery" target="_parent">Check your ZIP code</a> — it takes five seconds.</p>
   </div>
 </section>
 
-<section style="background:var(--surface-2);border-top:1px solid var(--border)">
+<section style="border-top:1px solid var(--border)">
   <div class="wrap" style="max-width:820px">
-    <span class="eyebrow">Good to know</span>
     <h2 class="mb-lg">Straight answers.</h2>
     <div class="faq">
       <details><summary>Do I need experience to rent?</summary><div class="body">Yes — prior skid steer or track loader experience, and operators must be 21+. It protects you, the machine, and the next renter. Details on the <a href="https://www.terraforgellc.com/requirements" target="_parent">Requirements</a> page.</div></details>

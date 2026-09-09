@@ -111,8 +111,8 @@ a{color:var(--amber)}a:hover{color:#ffc233}
 /* ---------- Buttons ---------- */
 .btn{
   display:inline-block;padding:14px 28px;border-radius:var(--radius);
-  font-family:var(--font-body);font-weight:700;font-size:.82rem;
-  text-transform:uppercase;letter-spacing:.14em;text-decoration:none;
+  font-family:var(--font-body);font-weight:700;font-size:.9rem;
+  text-decoration:none;
   transition:background .15s,color .15s,transform .1s;cursor:pointer;border:0;
   line-height:1;
 }
@@ -124,17 +124,8 @@ a{color:var(--amber)}a:hover{color:#ffc233}
 /* ---------- Hero ---------- */
 .hero{
   padding:clamp(56px,10vw,128px) var(--pad-x);
-  background:
-    radial-gradient(1200px 500px at 80% 0%,rgba(245,165,0,.09),transparent 60%),
-    linear-gradient(180deg,#0D0D0D 0%,#0a0a0a 100%);
+  background:var(--bg);
   border-bottom:1px solid var(--border);
-  position:relative;
-  overflow:hidden;
-}
-.hero::before{
-  content:"";position:absolute;inset:0;
-  background-image:linear-gradient(90deg,rgba(255,255,255,.01) 1px,transparent 1px);
-  background-size:80px 100%;pointer-events:none;
 }
 .hero-inner{position:relative;z-index:1}
 .hero h1{margin-bottom:20px;max-width:14ch}
@@ -203,7 +194,7 @@ a{color:var(--amber)}a:hover{color:#ffc233}
   padding:14px 4px;border-bottom:1px solid var(--border);
   display:flex;justify-content:space-between;gap:12px;
 }
-.specs .row .k{color:var(--muted);font-size:.82rem;text-transform:uppercase;letter-spacing:.1em}
+.specs .row .k{color:var(--muted);font-size:.82rem}
 .specs .row .v{color:var(--text);font-weight:500;text-align:right;font-size:.95rem}
 
 /* ---------- FAQ / Accordion ---------- */
@@ -318,7 +309,6 @@ footer .legal{
 
 <section>
   <div class="wrap">
-    <span class="eyebrow">Included</span>
     <h2 class="mb-md">HD 80" Bucket</h2>
     <p class="lead mb-md">Heavy-duty construction bucket. Your default workhorse.</p>
     <div class="specs">
@@ -331,9 +321,8 @@ footer .legal{
   </div>
 </section>
 
-<section style="background:var(--surface-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+<section style="border-top:1px solid var(--border)">
   <div class="wrap">
-    <span class="eyebrow">Add-on #1</span>
     <h2 class="mb-md">42" Pallet Forks · Titan</h2>
     <p class="lead mb-md">Step-through design, 4,000-lb fork rating. Moves pallets, stacked lumber, stone, big bag products.</p>
     <div class="specs">
@@ -348,7 +337,6 @@ footer .legal{
 
 <section>
   <div class="wrap">
-    <span class="eyebrow">Add-on #2</span>
     <h2 class="mb-md">76" Brush Grapple · Jenkins</h2>
     <p class="lead mb-md">Our most-requested attachment. Handles storm debris, brush piles, fallen logs, tough yard cleanups.</p>
     <div class="specs">
@@ -361,9 +349,8 @@ footer .legal{
   </div>
 </section>
 
-<section style="background:var(--surface-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+<section style="border-top:1px solid var(--border)">
   <div class="wrap">
-    <span class="eyebrow">Add-on #3</span>
     <h2 class="mb-md">Economy Stump Bucket</h2>
     <p class="lead mb-md">AR400-steel stump / root bucket for removing stumps, grubbing roots, and tight-space excavation.</p>
     <div class="specs">
