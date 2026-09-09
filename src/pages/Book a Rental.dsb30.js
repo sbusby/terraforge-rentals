@@ -205,7 +205,41 @@ async function onBookClick() {
   }
 }
 
+/**
+ * When the booking.html embed (an HtmlComponent) is on this page it IS the
+ * booking UI: hide the legacy native elements so they can't overlap it.
+ * The embed talks to the backend over /_functions/rental and asks the host
+ * page to navigate via postMessage (handled in masterPage.js).
+ */
+function hideLegacyIfEmbedPresent() {
+  let embeds = [];
+  try {
+    embeds = $w('HtmlComponent');
+  } catch (e) {
+    return false;
+  }
+  if (!embeds || embeds.length === 0) return false;
+  for (const role of Object.keys(IDS)) {
+    const e = el(role);
+    if (e && e.hide) e.hide();
+  }
+  try {
+    $w('Text').forEach((t) => t.hide());
+  } catch (e) {
+    /* ignore */
+  }
+  return true;
+}
+
 $w.onReady(async function () {
+  if (hideLegacyIfEmbedPresent()) return;
+
+  // The editor adds checkboxes ticked by default — start clean.
+  for (const role of ['attachOnly', 'forks', 'grapple', 'stump', 'terms']) {
+    const e = el(role);
+    if (e && 'checked' in e) e.checked = false;
+  }
+
   // Elements were added via the editor with default text; set every label from
   // code so the page copy lives here alongside the pricing config.
   const labels = {
