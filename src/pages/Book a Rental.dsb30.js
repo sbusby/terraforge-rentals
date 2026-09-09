@@ -229,7 +229,7 @@ function hideLegacyIfEmbedPresent() {
     }
   };
   for (const role of Object.keys(IDS)) tuck(el(role));
-  for (const type of ['Text', 'Checkbox', 'DatePicker', 'Dropdown', 'RadioButtonGroup', 'Button']) {
+  for (const type of ['Text', 'Checkbox', 'DatePicker', 'Dropdown', 'RadioButtonGroup']) {
     try {
       $w(type).forEach(tuck);
     } catch (e) {
