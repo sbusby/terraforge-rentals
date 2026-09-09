@@ -219,14 +219,22 @@ function hideLegacyIfEmbedPresent() {
     return false;
   }
   if (!embeds || embeds.length === 0) return false;
-  for (const role of Object.keys(IDS)) {
-    const e = el(role);
-    if (e && e.hide) e.hide();
-  }
-  try {
-    $w('Text').forEach((t) => t.hide());
-  } catch (e) {
-    /* ignore */
+  const tuck = (e) => {
+    if (!e) return;
+    try {
+      if (e.collapse) e.collapse(); // remove from layout so the embed isn't pushed down
+      else if (e.hide) e.hide();
+    } catch (err) {
+      /* ignore */
+    }
+  };
+  for (const role of Object.keys(IDS)) tuck(el(role));
+  for (const type of ['Text', 'Checkbox', 'DatePicker', 'Dropdown', 'RadioButtonGroup', 'Button']) {
+    try {
+      $w(type).forEach(tuck);
+    } catch (e) {
+      /* ignore */
+    }
   }
   return true;
 }
