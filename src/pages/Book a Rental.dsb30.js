@@ -229,6 +229,15 @@ function hideLegacyIfEmbedPresent() {
     }
   };
   for (const role of Object.keys(IDS)) tuck(el(role));
+  // The site header's stray "Home" button and cart icon float over the
+  // embed's own nav on this page; the widget has its own navigation.
+  for (const id of ['#button1', '#shoppingCartIcon1']) {
+    try {
+      tuck($w(id));
+    } catch (e) {
+      /* ignore */
+    }
+  }
   for (const type of ['Text', 'Checkbox', 'DatePicker', 'Dropdown', 'RadioButtonGroup']) {
     try {
       $w(type).forEach(tuck);
