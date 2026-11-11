@@ -1,0 +1,12 @@
+# Old Wix page URLs -> their new homes (301 keeps search ranking)
+/home                   /                 301
+/book-online            /book-a-rental    301
+/booking-calendar       /book-a-rental    301
+/booking-form           /book-a-rental    301
+/cart-page              /book-a-rental    301
+/checkout               /book-a-rental    301
+/available-attachments  /attachments      301
+/thank-you-page         /thank-you        301
+/plans-pricing          /book-a-rental    301
+/_functions/rental      /api/rental       307
+/service-page/*         /book-a-rental    301

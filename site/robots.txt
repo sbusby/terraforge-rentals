@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /api/
+Disallow: /thank-you
+
+Sitemap: https://www.terraforgellc.com/sitemap.xml

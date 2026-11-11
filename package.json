@@ -1,13 +1,20 @@
 {
   "devDependencies": {
-    "@wix/cli": "^1.0.0",
-    "@wix/eslint-plugin-cli": "^1.0.0",
-    "eslint": "^8.25.0",
-    "react": "16.14.0"
+    "wrangler": "^4"
   },
   "scripts": {
-    "postinstall": "wix sync-types",
-    "dev": "wix dev",
-    "lint": "eslint ."
+    "build": "node scripts/build-site.mjs",
+    "dev": "npm run build && wrangler d1 migrations apply terraforge-reservations --local && wrangler pages dev",
+    "test": "node --test test/",
+    "db:migrate": "wrangler d1 migrations apply terraforge-reservations --remote",
+    "deploy": "npm run build && wrangler pages deploy",
+    "test:e2e": "node scripts/e2e.mjs"
+  },
+  "name": "terraforge-rentals",
+  "private": true,
+  "type": "module",
+  "allowScripts": {
+    "workerd@1.20261110.1": true,
+    "esbuild@0.28.2": true
   }
 }
