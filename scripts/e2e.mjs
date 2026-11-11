@@ -177,6 +177,11 @@ try {
     assert.equal(p.get('customer_email'), 'renter@example.com');
     assert.equal(p.get('metadata[reservation_id]'), resA.reservationId);
     assert.match(p.get('success_url'), /\/thank-you\?session_id=\{CHECKOUT_SESSION_ID\}$/);
+    // Stripe Tax (wrangler.toml STRIPE_AUTOMATIC_TAX = "true")
+    assert.equal(p.get('automatic_tax[enabled]'), 'true');
+    assert.equal(p.get('line_items[0][price_data][tax_behavior]'), 'exclusive');
+    assert.equal(p.get('shipping_address_collection[allowed_countries][0]'), 'US');
+    assert.equal(p.get('billing_address_collection'), 'required');
   });
 
   await step('pending checkout holds the dates', async () => {

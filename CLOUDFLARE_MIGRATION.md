@@ -1,8 +1,10 @@
 # Moving terraforgellc.com off Wix → Cloudflare Pages + Stripe
 
-**Deadlines:** Wix charges $348 on **Dec 10, 2026**. The Wix plan and the domain
-registration both end **Dec 29, 2026**. Turn off auto-renew in Wix now; the
-site stays up until Dec 29, which is the window to do all of this.
+**Deadlines** (read from your Wix account on Nov 11):
+- **Nov 29, 2026:** Wix bills the **domain** renewal on the Amex ending 2008 (still auto-renew on). Its first year was free, so this is a separate charge.
+- ~~**Dec 10, 2026:** Core plan renewal ($348)~~: auto-renew is now off, so no charge.
+- **Dec 29, 2026:** the plan and the domain registration both end. Without the
+  plan, Wix disconnects the custom domain, so cutover must be done by then.
 
 ## Status (updated Nov 11)
 
@@ -12,14 +14,15 @@ site stays up until Dec 29, which is the window to do all of this.
 - [x] `ADMIN_TOKEN` generated in `.dev.vars` (gitignored; keep a copy in 1Password)
 - [x] `npm run setup:cloudflare` script written: creates the database, applies the schema, sets the secrets
 - [x] Domain checked: no email on terraforgellc.com (no MX records), so there's no mailbox to move
+- [x] Wix account checked (read-only): **0 orders ever**, so there's nothing to refund in Wix; tax setup recorded below
 
 **Your part, in order (about 1½ hours total, can be split up)**
-- [ ] **Now, 2 min:** Wix → Subscriptions → Core plan → turn **off** auto-renew (before Dec 10)
-- [ ] **Now, 5 min:** Wix → Settings → Tax: note the rate or rates you charge today, then pick a tax mode (below)
-- [ ] **This week, 20 min:** Stripe account + test keys + webhook (step 1)
+- [x] Core plan auto-renew turned **off** (confirmed in Wix Nov 11; the plan ends Dec 29)
+- [x] Tax mode chosen: **Stripe Tax**, switched on in `wrangler.toml` and tested
+- [ ] **This week, 30 min:** Stripe account + Stripe Tax setup + test keys + webhook (step 1)
 - [ ] **This week, 15 min:** Cloudflare sign-in + `npm run setup:cloudflare db` + connect GitHub (step 2)
 - [ ] **This week, 10 min:** test booking with a Stripe test card (step 3)
-- [ ] **By Dec 1, 15 min + waiting:** domain unlock + transfer (step 5)
+- [ ] **Before Nov 29, 15 min + waiting:** domain unlock + transfer (step 5). Once the transfer is under way, turn off the domain's auto-renew in Wix.
 - [ ] **Once the domain is on Cloudflare, 20 min:** cutover (step 6)
 
 ## What changed in the repo (branch `cloudflare-migration`)
@@ -41,30 +44,44 @@ Prices and date rules still live in `src/public/rental.js`. Both sites read it.
 **Don't merge this branch into `main` until cutover day.** `main` is still
 synced to Wix, and this branch removes the Wix CLI from `package.json`.
 
-## Before you start: decide on sales tax
+## Sales tax: Stripe Tax (decided)
 
-The site promises "plus tax, added at checkout." Pick one and set it in
-`wrangler.toml` (or as a Pages variable):
+`wrangler.toml` has `STRIPE_AUTOMATIC_TAX = "true"`. At checkout:
+- prices show before tax, and Stripe adds the tax on top
+- the customer enters the **job site address** (Checkout's "shipping" field,
+  labeled for the job site), and Stripe Tax uses it to pick the rate
+- Stripe charges 0.5% per transaction for this
 
-- **Stripe Tax** (`STRIPE_AUTOMATIC_TAX = "true"`): works out VA / MD / DC rates
-  from the customer's billing address. Costs 0.5% per transaction. You register
-  your VA sales-tax ID in Stripe → Tax settings.
-- **One fixed rate** (`STRIPE_TAX_RATE_ID = "txr_..."`): create a tax rate in
-  Stripe → Products → Tax rates. Free, but every customer pays the same rate.
+Stripe Tax only collects tax where you tell it you're registered, so step 1
+includes setting that up.
 
-To match what customers pay today, look at Wix Dashboard → Settings → Tax first.
+For reference, Wix was set to 6% on Virginia only, and nobody ever checked
+out, so no customer has been charged tax yet. Two questions for your
+accountant before going live:
+- Is the separately stated delivery/pickup fee taxable in VA? If not, give
+  it its own tax code in Stripe (ask me to wire that in).
+- Do you need to register in MD or DC for rentals delivered there? Add any
+  registration in Stripe → Tax → Registrations, and Stripe starts collecting there.
 
 ## Step-by-step
 
-### 1. Stripe (about 20 min)
+### 1. Stripe (about 30 min)
 1. Create or activate a Stripe account for TerraForge LLC (bank account, EIN).
-2. Developers → API keys: copy the **test** secret key (`sk_test_…`).
-3. Developers → Webhooks → Add endpoint. URL `https://terraforge-rentals.pages.dev/api/stripe-webhook`
+2. **Stripe Tax** → Settings:
+   - Origin address: your Alexandria, VA 22310 business address.
+   - Default product tax code: pick the one for renting equipment (search
+     "rental" in the picker).
+   - Default tax behavior: **Exclusive**.
+   - Registrations → add **Virginia** with your VA sales-tax account number,
+     plus MD or DC if your accountant says so.
+   Set this up in test mode too, or test checkouts will show $0 tax.
+3. Developers → API keys: copy the **test** secret key (`sk_test_…`).
+4. Developers → Webhooks → Add endpoint. URL `https://terraforge-rentals.pages.dev/api/stripe-webhook`
    for now (switch to the real domain at cutover). Events:
    `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
    `checkout.session.async_payment_failed`, `checkout.session.expired`.
    Copy its signing secret (`whsec_…`).
-4. Settings → Emails: turn on **successful payments** emails to customers
+5. Settings → Emails: turn on **successful payments** emails to customers
    (their receipt) and payment notifications to you. These replace the Wix
    order emails.
 
@@ -111,11 +128,16 @@ curl -X POST https://<site>/api/admin/reservations \
   -d '{"action":"add","start":"2026-12-03","end":"2026-12-04","resources":["bobcatT64"],"name":"…","phone":"…","source":"wix-import"}'
 ```
 `resources` keys: `bobcatT64`, `palletForks`, `brushGrapple`, `stumpBucket`.
-Any refunds on orders paid through Wix still have to be issued in Wix, so do
-them before the plan ends.
+(As of Nov 11 the Wix store has no orders at all, so there's nothing to refund in Wix.)
 
-### 5. Domain (start by Dec 1; transfers take up to a week)
-The domain is registered at Wix, expires Dec 29, 2026, and is transfer-locked.
+### 5. Domain (start before Nov 29; transfers take up to a week)
+The domain is registered at Wix, set to auto-renew on **Nov 29**, expires
+Dec 29, 2026, and is transfer-locked. A transfer adds a year of registration at
+the new registrar, so if you start it before Nov 29 you can turn off Wix's
+domain auto-renew and skip that charge. If Nov 29 comes first, let it renew:
+the transfer still works afterwards, you just pay Wix for that year.
+Never turn off the domain's auto-renew *without* a transfer under way, or
+the site goes dark on Dec 29.
 1. Add `terraforgellc.com` to Cloudflare (free plan). It imports the DNS records.
 2. In Wix → Domains: **unlock** the domain and get the **transfer (auth) code**.
 3. Cloudflare Registrar only accepts domains already using Cloudflare
