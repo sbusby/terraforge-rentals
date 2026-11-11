@@ -9,7 +9,8 @@
     "db:migrate": "wrangler d1 migrations apply terraforge-reservations --remote",
     "deploy": "npm run build && wrangler pages deploy",
     "test:e2e": "node scripts/e2e.mjs",
-    "setup:cloudflare": "bash scripts/setup-cloudflare.sh"
+    "setup:cloudflare": "bash scripts/setup-cloudflare.sh",
+    "setup:stripe": "node scripts/setup-stripe.mjs"
   },
   "name": "terraforge-rentals",
   "private": true,

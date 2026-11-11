@@ -19,7 +19,12 @@
 **Your part, in order (about 1½ hours total, can be split up)**
 - [x] Core plan auto-renew turned **off** (confirmed in Wix Nov 11; the plan ends Dec 29)
 - [x] Tax mode chosen: **Stripe Tax**, switched on in `wrangler.toml` and tested
-- [ ] **This week, 30 min:** Stripe account + Stripe Tax setup + test keys + webhook (step 1)
+- [x] Stripe account created; **test mode** configured by `npm run setup:stripe` (Nov 11): Stripe Tax active
+      (origin = your business address, code `txcd_99999999` General – Tangible Goods, prices exclusive),
+      Virginia registration, webhook to `terraforge-rentals.pages.dev`. Test key + webhook secret are in `.dev.vars`.
+      A real test checkout through the local site was accepted by Stripe.
+- [x] Stripe receipt emails turned on (Settings → Business → Customer emails → Successful payments)
+- [ ] **Before cutover:** finish Stripe business verification (EIN, bank account) so live payments and payouts work
 - [ ] **This week, 15 min:** Cloudflare sign-in + `npm run setup:cloudflare db` + connect GitHub (step 2)
 - [ ] **This week, 10 min:** test booking with a Stripe test card (step 3)
 - [ ] **Before Nov 29, 15 min + waiting:** domain unlock + transfer (step 5). Once the transfer is under way, turn off the domain's auto-renew in Wix.
@@ -152,9 +157,15 @@ the site goes dark on Dec 29.
 ### 6. Cutover day
 1. Merge `cloudflare-migration` into `main`, then in Pages → Settings → Builds
    switch the production branch to `main`.
-2. In Stripe, switch to the **live** secret key, and add a live webhook on
-   `https://www.terraforgellc.com/api/stripe-webhook` with its new `whsec_…`.
-   Put both in `.dev.vars` and run `npm run setup:cloudflare secrets` again.
+2. Stripe live mode: put the **live** secret key (`sk_live_…`) in `.dev.vars`, then
+   ```bash
+   npm run setup:stripe -- --live --apply --tax-code txcd_99999999 \
+     --address "<street>|Alexandria|VA|22310" \
+     --webhook-url https://www.terraforgellc.com/api/stripe-webhook
+   npm run setup:cloudflare secrets
+   ```
+   That sets up live Stripe Tax, the VA registration and the live webhook, saves the
+   new `whsec_…`, and uploads both secrets to Cloudflare.
 3. Do one real booking and refund it in Stripe to prove the whole flow works.
 4. Google Search Console: submit `https://www.terraforgellc.com/sitemap.xml`.
 5. Make sure Wix auto-renew is off.

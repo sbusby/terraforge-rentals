@@ -7,7 +7,7 @@ pages_build_output_dir = "site"
 binding = "DB"
 database_name = "terraforge-reservations"
 # Replace with the id printed by: npx wrangler d1 create terraforge-reservations
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "b09e798a-b980-4b8b-9179-acb415f04b1b"
 migrations_dir = "migrations"
 
 # Plain settings (secrets go in the dashboard or `wrangler pages secret put`):
