@@ -1,7 +1,7 @@
 # Moving terraforgellc.com off Wix → Cloudflare Pages + Stripe
 
 **Deadlines** (read from your Wix account on Nov 11):
-- **Nov 29, 2026:** Wix bills the **domain** renewal on the Amex ending 2008 (still auto-renew on). Its first year was free, so this is a separate charge.
+- **Nov 29, 2026:** Wix renews the **domain** (~$13, Amex ending 2008). **Keep this on**: the domain stays registered at Wix and just points to Cloudflare.
 - ~~**Dec 10, 2026:** Core plan renewal ($348)~~: auto-renew is now off, so no charge.
 - **Dec 29, 2026:** the plan and the domain registration both end. Without the
   plan, Wix disconnects the custom domain, so cutover must be done by then.
@@ -31,7 +31,7 @@
       Cloudflare's GitHub connection failed (error 8000011), so the project is **direct-upload**:
       deploy with `npm run deploy`. Auto-deploy on push can be added later with a GitHub Action.
 - [x] Full test booking on the live Cloudflare site (Nov 11): Stripe test payment → webhook → reservation **confirmed**, dates blocked. $700 rental + $42.00 VA tax (6%) = $742.00
-- [ ] **Before Nov 29, 15 min + waiting:** domain unlock + transfer (step 5). Once the transfer is under way, turn off the domain's auto-renew in Wix.
+- [x] Domain decision: **keep it registered at Wix** (renews Nov 29, ~$13); no transfer. Point it at Cloudflare with nameservers at cutover (step 5)
 - [ ] **Once the domain is on Cloudflare, 20 min:** cutover (step 6)
 
 ## What changed in the repo (branch `cloudflare-migration`)
@@ -139,24 +139,27 @@ curl -X POST https://<site>/api/admin/reservations \
 `resources` keys: `bobcatT64`, `palletForks`, `brushGrapple`, `stumpBucket`.
 (As of Nov 11 the Wix store has no orders at all, so there's nothing to refund in Wix.)
 
-### 5. Domain (start before Nov 29; transfers take up to a week)
-The domain is registered at Wix, set to auto-renew on **Nov 29**, expires
-Dec 29, 2026, and is transfer-locked. A transfer adds a year of registration at
-the new registrar, so if you start it before Nov 29 you can turn off Wix's
-domain auto-renew and skip that charge. If Nov 29 comes first, let it renew:
-the transfer still works afterwards, you just pay Wix for that year.
-Never turn off the domain's auto-renew *without* a transfer under way, or
-the site goes dark on Dec 29.
-1. Add `terraforgellc.com` to Cloudflare (free plan). It imports the DNS records.
-2. In Wix → Domains: **unlock** the domain and get the **transfer (auth) code**.
-3. Cloudflare Registrar only accepts domains already using Cloudflare
-   nameservers. If Wix lets you change the nameservers, switch to the two
-   Cloudflare gives you, then transfer to Cloudflare Registrar (about $10/yr). If
-   Wix won't, transfer to Porkbun or Namecheap instead, then point that
-   registrar's nameservers at Cloudflare.
-4. Pages project → Custom domains: add `www.terraforgellc.com` and
-   `terraforgellc.com`. Set a redirect from the bare domain to `www`, since the
-   canonical tags use `www`.
+### 5. Domain (keep it at Wix, point it at Cloudflare)
+The domain stays registered at Wix and keeps auto-renewing (~$13/yr). Wix supports
+using custom nameservers for a Wix-registered domain ("Changing Nameserver (NS)
+Records for a Wix Domain" in the Wix Help Center). Nameservers rather than A/CNAME
+pointing, because Cloudflare Pages can only serve the bare `terraforgellc.com` when
+Cloudflare runs the domain's DNS.
+
+**Ahead of time (safe; nothing changes yet):** Cloudflare dashboard → **Add a site** →
+`terraforgellc.com` → Free plan. Note the two nameservers it gives you.
+
+**On cutover day** (a few days before Dec 29, after step 6.1–6.2):
+1. Wix → Domains → unassign `terraforgellc.com` from the Terraforge site (Wix requires this first).
+2. Wix → Domains → ⋯ → **Manage DNS records** → Nameservers → **Use custom nameservers** →
+   enter Cloudflare's two → confirm → **Switch nameservers**.
+3. Cloudflare → Workers & Pages → `terraforge-rentals` → **Custom domains** → add
+   `www.terraforgellc.com` and `terraforgellc.com`.
+4. Cloudflare → Rules → Redirect Rules: send `terraforgellc.com/*` to `https://www.terraforgellc.com/$1` (301),
+   since the canonical tags use `www`.
+
+Propagation can take up to 48 hours. Old and new sites both work meanwhile, so
+visitors land on one or the other, never an error.
 
 ### 6. Cutover day
 1. Merge `cloudflare-migration` into `main`. (The Pages project is direct-upload, so
