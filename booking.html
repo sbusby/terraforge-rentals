@@ -274,7 +274,7 @@ footer .legal{border-top:1px solid var(--border);margin-top:32px;padding-top:20p
 
         <div class="cal-months" id="calMonths"></div>
 
-        <div class="cal-legend">Selected dates in amber &middot; booked or unavailable dates dimmed &middot; delivery &amp; pickup Thu&ndash;Sun only</div>
+        <div class="cal-legend">Selected dates in amber &middot; booked or unavailable dates dimmed &middot; delivery &amp; pickup Thu&ndash;Sun only (weekends only on weeks we&rsquo;re out of town)</div>
 
         <div class="date-fallback">
           <div>
@@ -448,7 +448,8 @@ var cfg = {
   ],
   deposit: {amount:600, note:'Refundable damage deposit — collected at delivery.'},
   cancellation: {freeCancelHours:48, bookingFee:50, lateRefundPct:50},
-  rules: {allowedDays:[0,4,5,6], minDays:1, maxDays:7, minLeadDays:2, maxAdvanceDays:180}
+  rules: {allowedDays:[0,4,5,6], minDays:1, maxDays:7, minLeadDays:2, maxAdvanceDays:180,
+    awayWeeks: {anchor:'2026-11-09', everyWeeks:2, days:[1,2,3,4,5]}}
 };
 
 var unavailable = {}; // {resourceKey: ['YYYY-MM-DD', ...]}
@@ -496,7 +497,14 @@ function todayDateObj(){ return new Date(); }
 function earliestDate(){ return addDays(todayStr, cfg.rules.minLeadDays); }
 function latestDate(){ return addDays(todayStr, cfg.rules.maxAdvanceDays); }
 function inBounds(d){ return d>=earliestDate() && d<=latestDate(); }
-function dowAllowed(d){ return cfg.rules.allowedDays.indexOf(dayOfWeek(d))>-1; }
+function isAwayDay(d){
+  var a=cfg.rules.awayWeeks;
+  if(!a || a.days.indexOf(dayOfWeek(d))<0) return false;
+  var monday=addDays(d,-((dayOfWeek(d)+6)%7));
+  var weeks=Math.round((fromDateString(monday)-fromDateString(a.anchor))/(7*86400000));
+  return ((weeks%a.everyWeeks)+a.everyWeeks)%a.everyWeeks===0;
+}
+function dowAllowed(d){ return cfg.rules.allowedDays.indexOf(dayOfWeek(d))>-1 && !isAwayDay(d); }
 
 function selectedResources(sel){
   var res=[];
@@ -594,7 +602,7 @@ function buildDayCell(dateStr, mode){
   btn.disabled = disabled;
 
   var label = DOW_NAMES[d.getDay()]+', '+MONTH_NAMES[d.getMonth()]+' '+d.getDate();
-  if(disabled) label += classes.indexOf('booked')>-1 ? ' — booked' : (classes.indexOf('blocked-dow')>-1 ? ' — no delivery/pickup this day' : ' — unavailable');
+  if(disabled) label += classes.indexOf('booked')>-1 ? ' — booked' : (isAwayDay(dateStr) ? ' — out of town this week' : (classes.indexOf('blocked-dow')>-1 ? ' — no delivery/pickup this day' : ' — unavailable'));
   btn.setAttribute('aria-label', label);
 
   return btn;
@@ -699,7 +707,7 @@ function setDateError(msg){
 function onDeliveryInputChange(){
   var v = $('deliveryInput').value;
   if(!v) return;
-  if(!dowAllowed(v)){ setDateError('Delivery is available Thursday through Sunday only.'); renderCalendar(); return; }
+  if(!dowAllowed(v)){ setDateError(isAwayDay(v) ? "We're out of town that week, so no weekday delivery. That weekend is open." : 'Delivery is available Thursday through Sunday only.'); renderCalendar(); return; }
   if(!inBounds(v)){ setDateError('Pick a delivery date within the next '+cfg.rules.maxAdvanceDays+' days, at least '+cfg.rules.minLeadDays+' days out.'); renderCalendar(); return; }
   if(!isRangeValid(v,v,unavailableSet())){ setDateError('That date is already booked for the gear you selected.'); renderCalendar(); return; }
   setDateError(null);
@@ -714,7 +722,7 @@ function onPickupInputChange(){
   var v = $('pickupInput').value;
   if(!v) return;
   if(!state.delivery){ setDateError('Pick a delivery date first.'); renderCalendar(); return; }
-  if(!dowAllowed(v)){ setDateError('Pickup is available Thursday through Sunday only.'); renderCalendar(); return; }
+  if(!dowAllowed(v)){ setDateError(isAwayDay(v) ? "We're out of town that week, so no weekday pickup. That weekend is open." : 'Pickup is available Thursday through Sunday only.'); renderCalendar(); return; }
   if(!inBounds(v)){ setDateError('That pickup date is out of range.'); renderCalendar(); return; }
   var days = rentalDays(state.delivery,v);
   if(days<1){ setDateError('Pickup must be after the delivery date.'); renderCalendar(); return; }
