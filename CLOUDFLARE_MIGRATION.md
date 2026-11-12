@@ -25,8 +25,12 @@
       A real test checkout through the local site was accepted by Stripe.
 - [x] Stripe receipt emails turned on (Settings → Business → Customer emails → Successful payments)
 - [ ] **Before cutover:** finish Stripe business verification (EIN, bank account) so live payments and payouts work
-- [ ] **This week, 15 min:** Cloudflare sign-in + `npm run setup:cloudflare db` + connect GitHub (step 2)
-- [ ] **This week, 10 min:** test booking with a Stripe test card (step 3)
+- [x] Cloudflare: signed in, D1 database created, Pages project `terraforge-rentals` created, secrets uploaded,
+      **live at https://terraforge-rentals.pages.dev** (Nov 11). Pages, booking API, Stripe test checkout,
+      webhook signature check and admin API all verified on the live site.
+      Cloudflare's GitHub connection failed (error 8000011), so the project is **direct-upload**:
+      deploy with `npm run deploy`. Auto-deploy on push can be added later with a GitHub Action.
+- [x] Full test booking on the live Cloudflare site (Nov 11): Stripe test payment → webhook → reservation **confirmed**, dates blocked. $700 rental + $42.00 VA tax (6%) = $742.00
 - [ ] **Before Nov 29, 15 min + waiting:** domain unlock + transfer (step 5). Once the transfer is under way, turn off the domain's auto-renew in Wix.
 - [ ] **Once the domain is on Cloudflare, 20 min:** cutover (step 6)
 
@@ -155,8 +159,8 @@ the site goes dark on Dec 29.
    canonical tags use `www`.
 
 ### 6. Cutover day
-1. Merge `cloudflare-migration` into `main`, then in Pages → Settings → Builds
-   switch the production branch to `main`.
+1. Merge `cloudflare-migration` into `main`. (The Pages project is direct-upload, so
+   deploys come from `npm run deploy`; update its `--branch` flag if you change the production branch.)
 2. Stripe live mode: put the **live** secret key (`sk_live_…`) in `.dev.vars`, then
    ```bash
    npm run setup:stripe -- --live --apply --tax-code txcd_99999999 \
