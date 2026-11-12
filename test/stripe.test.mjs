@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { formEncode, hmacHex, verifyWebhook } from '../lib/stripe.js';
 import { conflicts, todayStr, quotePayload } from '../lib/booking.js';
+import { isAwayDay } from '../src/public/rental.js';
 
 test('formEncode flattens nested params the way Stripe expects', () => {
   const s = formEncode({
@@ -54,10 +55,25 @@ test('quote prices match the advertised rates', () => {
   // Find a Thursday at least a week out so lead-time rules pass.
   const d = new Date(Date.now() + 7 * 86400000);
   while (d.getUTCDay() !== 4) d.setUTCDate(d.getUTCDate() + 1);
+  if (isAwayDay(d.toISOString().slice(0, 10))) d.setUTCDate(d.getUTCDate() + 7); // skip out-of-town weeks
   const start = d.toISOString().slice(0, 10);
   d.setUTCDate(d.getUTCDate() + 2);
   const end = d.toISOString().slice(0, 10); // Saturday: 2 days
   const q = quotePayload({ attachmentKeys: ['palletForks'], zoneKey: 'zone2' }, start, end);
   assert.equal(q.ok, true, q.reason);
   assert.equal(q.quote.total, 750 + 2 * 75 + 400);
+});
+
+test('away weeks block Mon-Fri every other week, weekends stay open', async () => {
+  const { isHandoffDay, validateRange } = await import('../src/public/rental.js');
+  assert.equal(isAwayDay('2026-11-12'), true);   // Thu, away week (anchor week)
+  assert.equal(isAwayDay('2026-11-14'), false);  // Sat of that week
+  assert.equal(isAwayDay('2026-11-19'), false);  // Thu, home week
+  assert.equal(isAwayDay('2026-11-27'), true);   // Fri, away again
+  assert.equal(isAwayDay('2026-10-29'), true);   // two weeks before the anchor
+  assert.equal(isAwayDay('2026-11-05'), false);  // one week before
+  assert.equal(isHandoffDay('2026-11-28'), true);
+  assert.equal(validateRange('2026-11-26', '2026-11-28', '2026-11-12').ok, false);
+  assert.equal(validateRange('2026-11-21', '2026-11-27', '2026-11-12').ok, false);
+  assert.equal(validateRange('2026-11-21', '2026-11-28', '2026-11-12').ok, true); // away week in the middle is fine
 });

@@ -56,6 +56,9 @@ export const CONFIG = {
     maxDays: 7,
     minLeadDays: 2,     // earliest delivery is 2 days out so you can schedule
     maxAdvanceDays: 180,
+    // Out of town every other week: no delivery or pickup Mon-Fri on those
+    // weeks. Weekends stay open. `anchor` is the Monday of one away week.
+    awayWeeks: { anchor: '2026-11-09', everyWeeks: 2, days: [1, 2, 3, 4, 5] },
   },
 };
 
@@ -96,6 +99,20 @@ export function occupiedDates(startStr, endStr) {
   return out;
 }
 
+/** True on a weekday of an every-other-week away week (see rules.awayWeeks). */
+export function isAwayDay(s) {
+  const a = CONFIG.rules.awayWeeks;
+  if (!a || !a.days.includes(dayOfWeek(s))) return false;
+  const monday = addDays(s, -((dayOfWeek(s) + 6) % 7));
+  const weeks = Math.round((fromDateString(monday) - fromDateString(a.anchor)) / (7 * 86400000));
+  return ((weeks % a.everyWeeks) + a.everyWeeks) % a.everyWeeks === 0;
+}
+
+/** Can we deliver or pick up on this date? */
+export function isHandoffDay(s) {
+  return CONFIG.rules.allowedDays.includes(dayOfWeek(s)) && !isAwayDay(s);
+}
+
 /**
  * Validate a delivery/return pair against all rules.
  * Returns { ok: true } or { ok: false, reason: '...' }.
@@ -107,6 +124,10 @@ export function validateRange(startStr, endStr, todayStr) {
     return { ok: false, reason: 'Delivery is available Thursday through Sunday only.' };
   if (!r.allowedDays.includes(dayOfWeek(endStr)))
     return { ok: false, reason: 'Pickup is available Thursday through Sunday only.' };
+  if (isAwayDay(startStr))
+    return { ok: false, reason: "We're out of town that week, so no weekday delivery. That weekend is open." };
+  if (isAwayDay(endStr))
+    return { ok: false, reason: "We're out of town that week, so no weekday pickup. That weekend is open." };
   const days = rentalDays(startStr, endStr);
   if (days < r.minDays) return { ok: false, reason: 'Return date must be after the delivery date.' };
   if (days > r.maxDays) return { ok: false, reason: `Rentals are limited to ${r.maxDays} days.` };

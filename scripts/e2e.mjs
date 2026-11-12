@@ -13,6 +13,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import assert from 'node:assert/strict';
 import { hmacHex } from '../lib/stripe.js';
+import { isAwayDay } from '../src/public/rental.js';
 
 const PORT = Number(process.env.E2E_PORT) || 8811;
 const STRIPE_PORT = 12111;
@@ -120,9 +121,10 @@ async function step(name, fn) {
 
 try {
   await waitUp();
-  const thu = nextDow(4, 7);
-  const A = { start: iso(thu), end: iso(plus(thu, 1)) };        // Thu -> Fri
-  const B = { start: iso(plus(thu, 7)), end: iso(plus(thu, 9)) }; // next Thu -> Sat
+  let thu = nextDow(4, 7);
+  if (isAwayDay(iso(thu))) thu = plus(thu, 7);                    // a Thursday we're in town
+  const A = { start: iso(thu), end: iso(plus(thu, 1)) };          // Thu -> Fri
+  const B = { start: iso(plus(thu, 9)), end: iso(plus(thu, 10)) }; // Sat -> Sun of the away week
   const sel = { includeMachine: true, attachmentKeys: ['palletForks'], zoneKey: 'zone1' };
   const contact = { name: 'Test Renter', email: 'renter@example.com', phone: '555-0100', address: '1 Main St', notes: '' };
   let resA;
@@ -162,6 +164,14 @@ try {
     const mon = iso(nextDow(1, 7));
     assert.equal((await api({ action: 'checkout', sel, start: mon, end: iso(plus(nextDow(1, 7), 3)), agreedToTerms: true, contact })).ok, false);
     assert.equal((await api({ action: 'checkout', sel, ...A, agreedToTerms: false, contact })).ok, false);
+  });
+
+  await step('away-week weekdays are rejected, that weekend is open', async () => {
+    const awayThu = iso(plus(thu, 7));
+    const d = await api({ action: 'quote', sel, start: awayThu, end: iso(plus(thu, 9)) });
+    assert.equal(d.ok, false);
+    assert.match(d.reason, /out of town/);
+    assert.equal((await api({ action: 'quote', sel, ...B })).ok, true);
   });
 
   await step('checkout creates a Stripe session with server-side prices', async () => {
