@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Delivery Zones & Fees — DC, Arlington, Fairfax, Alexandria | TerraForge</title>
-<meta name="description" content="Flat-fee equipment delivery and pickup within 50 miles of Alexandria, VA: $275, $400, or $525 by zone, covering both trips. Check your ZIP in seconds.">
+<title>Delivery Zones & Fees — Alexandria, Arlington, Fairfax, VA | TerraForge</title>
+<meta name="description" content="Flat-fee equipment delivery and pickup to Virginia job sites within 50 miles of Alexandria: $275, $400, or $525 by zone, covering both trips. Check your ZIP in seconds.">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -212,7 +212,7 @@ footer .legal{
   <div class="wrap hero-inner">
     <span class="eyebrow">Delivery Zones</span>
     <h1>We deliver.<br><span class="amber">You don't tow.</span></h1>
-    <p class="lead">Three zones based on driving distance from Alexandria, VA (22310). Flat-rate delivery fees — no surprises. Coverage extends up to 50 miles.</p>
+    <p class="lead">Three zones based on driving distance from Alexandria, VA (22310). Flat-rate delivery fees — no surprises. We deliver to Virginia job sites up to 50 miles away. Service to DC and Maryland is coming soon.</p>
   </div>
 </section>
 
@@ -224,7 +224,7 @@ footer .legal{
       <input id="zipInput" inputmode="numeric" maxlength="5" placeholder="e.g. 22043" oninput="checkZip()">
       <div class="result" id="zipResult"><span class="muted">Enter a 5-digit ZIP to check.</span></div>
     </div>
-    <p class="muted mt-lg" style="font-size:.85rem;max-width:60ch">Calculator uses driving-distance ZIP data for the DC/MD/VA metro. If your ZIP isn't listed, email us and we'll quote you directly — sometimes addresses are just outside the listed zones but we can still deliver.</p>
+    <p class="muted mt-lg" style="font-size:.85rem;max-width:60ch">Calculator covers Virginia ZIP codes. We don't deliver to DC or Maryland yet (coming soon). If your Virginia ZIP isn't listed, email us and we'll quote you directly — sometimes addresses are just outside the listed zones but we can still deliver.</p>
   </div>
 </section>
 
@@ -233,15 +233,15 @@ footer .legal{
     <h2 class="mb-lg">Three flat rates.</h2>
     <div class="zones">
       <div class="row">
-        <div><div class="label">Zone 1 · 0–20 mi</div><div class="note">Alexandria, Arlington, closest parts of DC + Fairfax County</div></div>
+        <div><div class="label">Zone 1 · 0–20 mi</div><div class="note">Alexandria, Arlington, Springfield, Fairfax, Mount Vernon</div></div>
         <div class="fee">$275</div>
       </div>
       <div class="row">
-        <div><div class="label">Zone 2 · 21–35 mi</div><div class="note">Much of DC metro, Montgomery Co., inner Prince William</div></div>
+        <div><div class="label">Zone 2 · 21–35 mi</div><div class="note">Woodbridge, Manassas, Dale City, Lake Ridge</div></div>
         <div class="fee">$400</div>
       </div>
       <div class="row">
-        <div><div class="label">Zone 3 · 36–50 mi</div><div class="note">Outer Loudoun, Stafford, Baltimore suburbs, Southern MD</div></div>
+        <div><div class="label">Zone 3 · 36–50 mi</div><div class="note">Leesburg, Ashburn, Warrenton, Stafford, Fredericksburg</div></div>
         <div class="fee">$525</div>
       </div>
     </div>
@@ -255,7 +255,7 @@ footer .legal{
       <div class="row"><div class="k">Drop-off</div><div class="v">Flatbed arrives at the start of your rental window. We place the T64 where you want it — within reason for truck access.</div></div>
       <div class="row"><div class="k">Pickup</div><div class="v">We come back at the end of your rental window. You don't transport, trailer, or load the machine.</div></div>
     </div>
-    <p class="muted mt-lg" style="font-size:.85rem">Outside our 50-mile radius? Email us — occasionally we make longer runs at custom rates.</p>
+    <p class="muted mt-lg" style="font-size:.85rem">Outside our 50-mile Virginia area? Email us — occasionally we make longer runs at custom rates.</p>
   </div>
 </section>
 
@@ -267,7 +267,7 @@ footer .legal{
 </section>
 
 <script>
-const ZONE_DATA = {"1": ["22301", "22302", "22303", "22304", "22305", "22306", "22307", "22308", "22309", "22310", "22311", "22312", "22313", "22314", "22315", "22316", "22320", "22321", "22331", "22332", "22333", "22334", "22336", "22352", "22020", "20190", "20191", "20192", "20194", "22030", "22031", "22032", "22033", "22034", "22035", "22036", "22037", "22038", "22039", "22040", "22041", "22042", "22043", "22044", "22046", "22060", "22066", "22079", "22101", "22102", "22103", "22106", "22107", "22108", "22109", "20101", "20102", "20190", "22150", "22151", "22152", "22153", "22160", "22161", "22180", "22181", "22182", "22183", "22184", "22185", "22199", "20001", "20002", "20003", "20004", "20005", "20006", "20007", "20008", "20009", "20010", "20011", "20012", "20013", "20015", "20016", "20017", "20018", "20019", "20020", "20024", "20036", "20037", "20045", "20052", "20057", "20064", "20202", "20204", "20228", "20230", "20240", "20245", "20260", "20301", "20317", "20318", "20319", "20330", "20340", "20350", "20370", "20372", "20380", "20389", "20390", "20391", "20392", "20393", "20394", "20395", "20398", "20401", "20402", "20403", "20404", "20405", "20406", "20407", "20408", "20409", "20410", "20411", "20412", "20413", "20414", "20415", "20416", "20417", "20418", "20419", "20420", "20421", "20422", "20423", "20424", "20425", "20426", "20427", "20428", "20429", "20431", "20433", "20434", "20435", "20436", "20437", "20439", "20440", "20441", "20442", "20444", "20447", "20451", "20453", "20456", "20460", "20463", "20468", "20469", "20470", "20472", "20500", "20501", "20502", "20503", "20504", "20505", "20506", "20507", "20508", "20509", "20510", "20515", "20520", "20521", "20522", "20523", "20524", "20525", "20526", "20527", "20528", "20529", "20530", "20531", "20532", "20533", "20534", "20535", "20536", "20537", "20538", "20539", "20540", "20541", "20542", "20543", "20544", "20546", "20547", "20548", "20549", "20551", "20552", "20553", "20554", "20555", "20557", "20559", "20560", "20565", "20566", "20570", "20571", "20572", "20573", "20575", "20576", "20577", "20578", "20579", "20580", "20581", "20585", "20586", "20590", "20591", "20593", "20594", "20597", "20599", "20812", "20813", "20814", "20815", "20816", "20817", "20818", "20824", "20825", "20827", "20830", "20841", "20842", "20847", "20848", "20849", "20850", "20851", "20852", "20853", "20854", "20855", "20857", "20859", "20860", "20861", "20862", "20866", "20868", "20871", "20872", "20874", "20875", "20876", "20877", "20878", "20879", "20880", "20882", "20883", "20884", "20885", "20886", "20889", "20892", "20894", "20895", "20896", "20897", "20898", "20899", "20901", "20902", "20903", "20904", "20905", "20906", "20907", "20908", "20910", "20911", "20912", "20913", "20914", "20915", "20916", "20918", "20993", "20997"], "2": ["22001", "22003", "22009", "22015", "22022", "22027", "22042", "22043", "22044", "22060", "22066", "22079", "22101", "22102", "22124", "22151", "22152", "22153", "22193", "22194", "22195", "22304", "22307", "22308", "22309", "22315", "22079", "22191", "22192", "22193", "22194", "22195", "22172", "22185", "22199", "20109", "20110", "20111", "20112", "20113", "20181", "20701", "20703", "20704", "20705", "20706", "20707", "20708", "20709", "20710", "20711", "20712", "20715", "20716", "20717", "20718", "20719", "20720", "20721", "20722", "20723", "20724", "20725", "20726", "20731", "20732", "20733", "20735", "20736", "20737", "20738", "20740", "20741", "20742", "20743", "20744", "20745", "20746", "20747", "20748", "20749", "20750", "20751", "20752", "20753", "20754", "20755", "20757", "20762", "20765", "20768", "20769", "20770", "20771", "20772", "20773", "20774", "20775", "20776", "20777", "20778", "20779", "20781", "20782", "20783", "20784", "20785", "20787", "20788", "20790", "20791", "20792", "20794", "20797", "20799", "21013", "21020", "21022", "21029", "21032", "21041", "21042", "21043", "21044", "21045", "21046", "21054", "21060", "21061", "21062", "21075", "21076", "21077", "21079", "21090", "21093", "21094", "21104", "21108", "21111", "21113", "21114", "21117", "21122", "21123", "21128", "21131", "21133", "21140", "21144", "21146", "21152", "21153", "21154", "21155", "21156", "21157", "21158", "21160", "21161", "21163", "21201", "21202", "21203", "21204", "21205", "21206", "21207", "21208", "21209", "21210", "21211", "21212", "21213", "21214", "21215", "21216", "21217", "21218", "21219", "21220", "21221", "21222", "21223", "21224", "21225", "21226", "21227", "21228", "21229", "21230", "21231", "21233", "21234", "21235", "21236", "21237", "21239", "21240", "21241", "21244", "21250", "21251", "21252", "21263", "21264", "21265", "21268", "21270", "21273", "21274", "21275", "21278", "21279", "21280", "21281", "21282", "21283", "21284", "21285", "21286", "21287", "21288", "21289", "21290", "21297", "21298"], "3": ["20607", "20608", "20611", "20612", "20613", "20615", "20616", "20617", "20618", "20619", "20620", "20621", "20622", "20623", "20624", "20625", "20626", "20627", "20628", "20629", "20630", "20632", "20634", "20636", "20637", "20639", "20640", "20643", "20645", "20646", "20650", "20653", "20656", "20657", "20658", "20659", "20660", "20662", "20664", "20667", "20670", "20674", "20675", "20676", "20677", "20678", "20680", "20682", "20684", "20685", "20686", "20687", "20688", "20689", "20690", "20692", "20693", "20695", "22025", "22026", "22125", "22134", "22135", "22172", "20117", "20119", "20120", "20121", "20122", "20124", "20129", "20130", "20131", "20132", "20134", "20135", "20137", "20139", "20140", "20141", "20142", "20143", "20144", "20146", "20147", "20148", "20149", "20158", "20159", "20160", "20163", "20164", "20165", "20166", "20167", "20168", "20169", "20170", "20171", "20172", "20175", "20176", "20177", "20178", "20180", "20182", "20184", "20185", "20186", "20187", "20188", "20189", "20197", "20198", "20601", "20602", "20603", "20604", "22630", "22711", "22712", "22713", "22714", "22715", "22716", "22718", "22719", "22720", "22722", "22723", "22724", "22725", "22726", "22727", "22728", "22729", "22730", "22731", "22732", "22733", "22734", "22735", "22736", "22737", "22738", "22739", "22740", "22741", "22742", "22743", "22746", "22747", "22748", "22749", "22756"]};
+const ZONE_DATA = {"1": ["20101", "20102", "20190", "20191", "20192", "20194", "22020", "22030", "22031", "22032", "22033", "22034", "22035", "22036", "22037", "22038", "22039", "22040", "22041", "22042", "22043", "22044", "22046", "22060", "22066", "22079", "22101", "22102", "22103", "22106", "22107", "22108", "22109", "22150", "22151", "22152", "22153", "22160", "22161", "22180", "22181", "22182", "22183", "22184", "22185", "22199", "22201", "22202", "22203", "22204", "22205", "22206", "22207", "22209", "22211", "22213", "22301", "22302", "22303", "22304", "22305", "22306", "22307", "22308", "22309", "22310", "22311", "22312", "22313", "22314", "22315", "22316", "22320", "22321", "22331", "22332", "22333", "22334", "22336", "22352"], "2": ["20109", "20110", "20111", "20112", "20113", "20181", "22001", "22003", "22009", "22015", "22022", "22027", "22124", "22172", "22191", "22192", "22193", "22194", "22195"], "3": ["20117", "20119", "20120", "20121", "20122", "20124", "20129", "20130", "20131", "20132", "20134", "20135", "20137", "20139", "20140", "20141", "20142", "20143", "20144", "20146", "20147", "20148", "20149", "20158", "20159", "20160", "20163", "20164", "20165", "20166", "20167", "20168", "20169", "20170", "20171", "20172", "20175", "20176", "20177", "20178", "20180", "20182", "20184", "20185", "20186", "20187", "20188", "20189", "20197", "20198", "22025", "22026", "22125", "22134", "22135", "22401", "22405", "22406", "22554", "22556", "22630", "22711", "22712", "22713", "22714", "22715", "22716", "22718", "22719", "22720", "22722", "22723", "22724", "22725", "22726", "22727", "22728", "22729", "22730", "22731", "22732", "22733", "22734", "22735", "22736", "22737", "22738", "22739", "22740", "22741", "22742", "22743", "22746", "22747", "22748", "22749", "22756"]};
 function checkZip(){
   const el = document.getElementById('zipInput');
   const out = document.getElementById('zipResult');
@@ -276,6 +276,12 @@ function checkZip(){
   if(zip.length < 5){
     out.classList.remove('hit');
     out.innerHTML = '<span class="muted">Enter a 5-digit ZIP to check.</span>';
+    return;
+  }
+  const p = Number(zip.slice(0,3));
+  if([200,202,203,204,205].includes(p) || (p>=206 && p<=219)){
+    out.classList.remove('hit');
+    out.innerHTML = '<div class="zone">DC &amp; Maryland: coming soon</div><div class="sub">We deliver to Virginia job sites only for now. Email seanbusby10@gmail.com and we\'ll let you know when we start.</div>';
     return;
   }
   let z = null;
@@ -297,7 +303,7 @@ function checkZip(){
   <div class="wrap">
     <div class="col">
       <h5>TERRAFORGE</h5>
-      <p class="muted" style="font-size:.88rem;max-width:260px">Bobcat T64 compact track loader rental. Delivery-only within 50 miles of Alexandria, VA.</p>
+      <p class="muted" style="font-size:.88rem;max-width:260px">Bobcat T64 compact track loader rental. Delivery-only to Virginia job sites within 50 miles of Alexandria. DC &amp; Maryland coming soon.</p>
     </div>
     <div class="col">
       <h5>Explore</h5>
@@ -315,7 +321,7 @@ function checkZip(){
     <div class="col">
       <h5>Contact</h5>
       <a href="mailto:seanbusby10@gmail.com">seanbusby10@gmail.com</a>
-      <p class="muted" style="font-size:.82rem;margin-top:8px">Serving the DC Metro area.<br>Response within 24 hours.</p>
+      <p class="muted" style="font-size:.82rem;margin-top:8px">Serving Northern Virginia.<br>Response within 24 hours.</p>
     </div>
   </div>
   <div class="wrap"><div class="legal">© 2026 Terraforge Equipment Rentals. All rights reserved.</div></div>
