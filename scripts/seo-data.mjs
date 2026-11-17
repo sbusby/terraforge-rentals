@@ -12,8 +12,7 @@ const LOGO = `${SITE}/images/logo.png`;
 const AREA = [
   'Alexandria', 'Arlington', 'Springfield', 'Fairfax', 'Annandale', 'Burke', 'Lorton',
   'Mount Vernon', 'Falls Church', 'McLean', 'Vienna', 'Woodbridge', 'Manassas', 'Reston',
-  'Herndon', 'Centreville', 'Chantilly', 'Washington DC', 'Bethesda', 'Silver Spring',
-  'Fort Washington', 'Waldorf', 'Stafford', 'Fredericksburg', 'Leesburg',
+  'Herndon', 'Centreville', 'Chantilly', 'Stafford', 'Fredericksburg', 'Leesburg',
 ].map((name) => ({ '@type': 'City', name }));
 
 const business = {
@@ -23,7 +22,7 @@ const business = {
   name: 'TerraForge LLC',
   alternateName: 'TerraForge Rentals',
   description:
-    'Bobcat T64 compact track loader (skid steer) rental with delivery and pickup, serving a 50-mile radius of Alexandria, VA. Delivery available Thursday through Sunday, including weekends. Book online with live availability.',
+    'Bobcat T64 compact track loader (skid steer) rental with delivery and pickup, serving Virginia job sites within 50 miles of Alexandria, VA (DC and Maryland coming soon). Delivery available Thursday through Sunday, including weekends. Book online with live availability.',
   url: SITE,
   telephone: PHONE,
   email: 'seanbusby10@gmail.com',
@@ -41,11 +40,7 @@ const business = {
   },
   geo: { '@type': 'GeoCoordinates', latitude: 38.7757, longitude: -77.0866 },
   areaServed: [
-    {
-      '@type': 'GeoCircle',
-      geoMidpoint: { '@type': 'GeoCoordinates', latitude: 38.7757, longitude: -77.0866 },
-      geoRadius: '80467',
-    },
+    { '@type': 'State', name: 'Virginia' },
     ...AREA,
   ],
   openingHoursSpecification: [
@@ -84,7 +79,7 @@ const product = {
   '@id': `${SITE}/equipment#t64`,
   name: 'Bobcat T64 Compact Track Loader Rental — Delivered',
   description:
-    'Late-model Bobcat T64 compact track loader delivered to your job site anywhere within 50 miles of Alexandria, VA. Standard dirt bucket included; pallet forks, brush grapple and stump bucket available. Flat pricing, online booking, delivery Thu–Sun.',
+    'Late-model Bobcat T64 compact track loader delivered to your job site anywhere in Virginia within 50 miles of Alexandria. Standard dirt bucket included; pallet forks, brush grapple and stump bucket available. Flat pricing, online booking, delivery Thu–Sun.',
   image: IMG,
   brand: { '@type': 'Brand', name: 'Bobcat' },
   category: 'Construction Equipment Rental',
@@ -103,7 +98,7 @@ const faq = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
   mainEntity: [
-    q('How much does it cost to rent a Bobcat T64 near Alexandria, VA?', 'Flat rates: $425 for one day, $750 for a weekend (2 days), and $1,250 for a full week (7 days). Delivery and pickup is one flat fee by zone: $275 (0–20 miles), $400 (21–35 miles) or $525 (36–50 miles). Attachments are $65–$110 per day.'),
+    q('How much does it cost to rent a Bobcat T64 near Alexandria, VA?', 'Flat rates: $425 for one day, $750 for a weekend (2 days), and $1,250 for a full week (7 days). We deliver to Virginia job sites only for now; DC and Maryland are coming soon. Delivery and pickup is one flat fee by zone: $275 (0–20 miles), $400 (21–35 miles) or $525 (36–50 miles). Attachments are $65–$110 per day.'),
     q('Do you deliver the skid steer, or do I need a trailer?', 'We deliver and pick up every rental — you never need a truck or trailer. Delivery and pickup are available Thursday through Sunday, including weekends.'),
     q('Is there a deposit?', 'Yes. A $600 refundable damage deposit is collected at delivery by card, cash or check and refunded within 5 business days after pickup, per the Rental Terms. It is not charged online.'),
     q('What do I need to rent the machine?', 'You must be 21 or older with a valid driver’s license, agree to the Rental Terms, and have a job site with truck-and-trailer access. No special license is required to operate a compact track loader on private property.'),

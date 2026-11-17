@@ -11,7 +11,7 @@
  * rate) — adjust below if you want different mid-length pricing.
  */
 
-export const TERMS_VERSION = '2026-08-05';
+export const TERMS_VERSION = '2026-11-17';
 
 export const CONFIG = {
   machine: {
