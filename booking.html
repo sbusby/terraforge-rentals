@@ -252,7 +252,7 @@ footer .legal{border-top:1px solid var(--border);margin-top:32px;padding-top:20p
     <span class="eyebrow">Live availability &middot; Pay online &middot; Deposit at delivery</span>
     <h1>Reserve the <span class="amber">T64.</span></h1>
     <p class="lead">Pick your dates, choose your gear, and see your exact total before you pay — plus tax, added at checkout. Takes about two minutes.</p>
-    <p class="hero-note">21+ with a valid driver's license &middot; Delivery only, Thu&ndash;Sun &middot; Questions? <a href="tel:+12088630450">Call</a> or <a href="sms:+12088630450">text (208) 863-0450</a></p>
+    <p class="hero-note">21+ with a valid driver's license &middot; Delivery only &middot; Every weekend + weekdays every other week &middot; Questions? <a href="tel:+12088630450">Call</a> or <a href="sms:+12088630450">text (208) 863-0450</a></p>
   </div>
 </section>
 
@@ -264,7 +264,7 @@ footer .legal{border-top:1px solid var(--border);margin-top:32px;padding-top:20p
       <!-- STEP 1: DATES -->
       <div class="step-card">
         <div class="step-head"><span class="n">01</span><h3>Pick your dates</h3></div>
-        <p class="hint">Delivery &amp; pickup Thursday&ndash;Sunday only. Click a date to set delivery, then a second date to set pickup (up to 7 days later).</p>
+        <p class="hint">Delivery &amp; pickup every weekend, plus any weekday on the weeks we&rsquo;re in Virginia (every other week). Click a date to set delivery, then a second date to set pickup (up to 7 days later).</p>
 
         <div class="cal-nav">
           <button type="button" class="cal-nav-btn" id="calPrev" aria-label="Previous month">&#8249;</button>
@@ -274,7 +274,7 @@ footer .legal{border-top:1px solid var(--border);margin-top:32px;padding-top:20p
 
         <div class="cal-months" id="calMonths"></div>
 
-        <div class="cal-legend">Selected dates in amber &middot; booked or unavailable dates dimmed &middot; delivery &amp; pickup Thu&ndash;Sun only (weekends only on weeks we&rsquo;re out of town)</div>
+        <div class="cal-legend">Selected dates in amber &middot; booked or unavailable dates dimmed &middot; every other week we&rsquo;re out of Virginia Monday&ndash;Friday, so only that Saturday and Sunday are open</div>
 
         <div class="date-fallback">
           <div>
@@ -448,7 +448,7 @@ var cfg = {
   ],
   deposit: {amount:600, note:'Refundable damage deposit — collected at delivery.'},
   cancellation: {freeCancelHours:48, bookingFee:50, lateRefundPct:50},
-  rules: {allowedDays:[0,4,5,6], minDays:1, maxDays:7, minLeadDays:2, maxAdvanceDays:180,
+  rules: {allowedDays:[0,1,2,3,4,5,6], minDays:1, maxDays:7, minLeadDays:2, maxAdvanceDays:180,
     awayWeeks: {anchor:'2026-11-09', everyWeeks:2, days:[1,2,3,4,5]}}
 };
 
@@ -707,7 +707,7 @@ function setDateError(msg){
 function onDeliveryInputChange(){
   var v = $('deliveryInput').value;
   if(!v) return;
-  if(!dowAllowed(v)){ setDateError(isAwayDay(v) ? "We're out of town that week, so no weekday delivery. That weekend is open." : 'Delivery is available Thursday through Sunday only.'); renderCalendar(); return; }
+  if(!dowAllowed(v)){ setDateError(isAwayDay(v) ? "We're out of town that week, so no weekday delivery. The weekends on either side are open." : 'Delivery is not available on that day.'); renderCalendar(); return; }
   if(!inBounds(v)){ setDateError('Pick a delivery date within the next '+cfg.rules.maxAdvanceDays+' days, at least '+cfg.rules.minLeadDays+' days out.'); renderCalendar(); return; }
   if(!isRangeValid(v,v,unavailableSet())){ setDateError('That date is already booked for the gear you selected.'); renderCalendar(); return; }
   setDateError(null);
@@ -722,7 +722,7 @@ function onPickupInputChange(){
   var v = $('pickupInput').value;
   if(!v) return;
   if(!state.delivery){ setDateError('Pick a delivery date first.'); renderCalendar(); return; }
-  if(!dowAllowed(v)){ setDateError(isAwayDay(v) ? "We're out of town that week, so no weekday pickup. That weekend is open." : 'Pickup is available Thursday through Sunday only.'); renderCalendar(); return; }
+  if(!dowAllowed(v)){ setDateError(isAwayDay(v) ? "We're out of town that week, so no weekday pickup. The weekends on either side are open." : 'Pickup is not available on that day.'); renderCalendar(); return; }
   if(!inBounds(v)){ setDateError('That pickup date is out of range.'); renderCalendar(); return; }
   var days = rentalDays(state.delivery,v);
   if(days<1){ setDateError('Pickup must be after the delivery date.'); renderCalendar(); return; }
@@ -942,6 +942,11 @@ function loadConfig(){
         if(data.config) mergeConfig(data.config);
         if(data.unavailable) unavailable = data.unavailable;
         if(data.today) todayStr = data.today;
+        // Dates chosen before live availability arrived may no longer be open.
+        if(state.delivery && !datesStillValid(state.delivery, state.pickup || state.delivery) &&
+           !(!state.pickup && dowAllowed(state.delivery) && inBounds(state.delivery) && isRangeValid(state.delivery,state.delivery,unavailableSet()))){
+          state.delivery = null; state.pickup = null;
+        }
         renderAll();
       }
     })
@@ -1007,8 +1012,35 @@ function init(){
   window.addEventListener('resize', sendHeight);
   window.addEventListener('load', sendHeight);
 
+  applyPrefill();
   renderAll();
   loadConfig();
+}
+
+/* The home-page quote builder links here as ?zone=zone1&att=palletForks,brushGrapple.
+   Only keys that exist in the config are accepted; dates are never prefilled. */
+function applyPrefill(){
+  var q;
+  try{ q = new URLSearchParams(window.location.search); }catch(e){ return; }
+  var zone = q.get('zone');
+  if(zone && cfg.zones.some(function(z){ return z.key===zone; })) state.zoneKey = zone;
+  (q.get('att')||'').split(',').forEach(function(k){
+    if(cfg.attachments.some(function(a){ return a.key===k; }) && state.attachments.indexOf(k)<0) state.attachments.push(k);
+  });
+  // ?start=YYYY-MM-DD&end=YYYY-MM-DD from the home page's "next open weekend"
+  // link. Checked against the same rules as a click; re-checked once live
+  // availability loads (see loadConfig), and again by the server at checkout.
+  var s = q.get('start'), e = q.get('end'), re = /^\d{4}-\d{2}-\d{2}$/;
+  if(s && e && re.test(s) && re.test(e) && datesStillValid(s,e)){
+    state.delivery = s; state.pickup = e;
+    var t = fromDateString(todayStr), d = fromDateString(s);
+    state.calBaseOffset = (d.getFullYear()-t.getFullYear())*12 + d.getMonth()-t.getMonth();
+  }
+}
+function datesStillValid(s,e){
+  var days = rentalDays(s,e);
+  return dowAllowed(s) && dowAllowed(e) && inBounds(s) && inBounds(e) &&
+    days>=cfg.rules.minDays && days<=cfg.rules.maxDays && isRangeValid(s,e,unavailableSet());
 }
 
 if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); }

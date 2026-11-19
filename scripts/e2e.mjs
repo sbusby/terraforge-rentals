@@ -160,9 +160,11 @@ try {
     assert.equal(d.quote.total, 425 + 75 + 275);
   });
 
-  await step('checkout rejects a Monday delivery and missing terms', async () => {
-    const mon = iso(nextDow(1, 7));
-    assert.equal((await api({ action: 'checkout', sel, start: mon, end: iso(plus(nextDow(1, 7), 3)), agreedToTerms: true, contact })).ok, false);
+  await step('checkout rejects an away-week Monday delivery and missing terms', async () => {
+    let monD = nextDow(1, 7);
+    if (!isAwayDay(iso(monD))) monD = plus(monD, 7);              // a Monday we're out of town
+    const mon = iso(monD);
+    assert.equal((await api({ action: 'checkout', sel, start: mon, end: iso(plus(monD, 5)), agreedToTerms: true, contact })).ok, false);
     assert.equal((await api({ action: 'checkout', sel, ...A, agreedToTerms: false, contact })).ok, false);
   });
 

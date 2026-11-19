@@ -36,7 +36,7 @@ the embeds' own `<title>`/description tags for consistency):
 | Requirements | Skid Steer Rental Requirements — Experience & Deposit \| TerraForge | What you need to rent the Bobcat T64: prior skid steer experience, 21+, valid ID, and a $600 refundable deposit collected at delivery. Delivery-only rentals. |
 | FAQ | Skid Steer Rental FAQ — Delivery, Deposit, Cancellation \| TerraForge | Straight answers on renting the Bobcat T64: how delivery works, fuel, weather, deposits, cancellation, and operator requirements in the Alexandria, VA area. |
 | Contact | Contact TerraForge — Bobcat T64 Rental, Alexandria VA | Questions about renting the Bobcat T64 in the DC metro area? Email or call TerraForge — owner-operated, responses within 24 hours. |
-| Book a Rental | Book a Bobcat T64 Rental Online — Live Availability \| TerraForge | Pick your dates, see your exact total with delivery and tax, and book the Bobcat T64 online. Delivery Thursday–Sunday across the Alexandria, VA area. |
+| Book a Rental | Book a Bobcat T64 Rental Online — Live Availability \| TerraForge | Pick your dates, see your exact total with delivery and tax, and book the Bobcat T64 online. Delivery every weekend, plus weekdays every other week, across the Alexandria, VA area. |
 | Terms | Rental Terms & Conditions \| TerraForge Equipment Rentals | The plain-English rental agreement for TerraForge equipment rentals: payment, deposit, delivery, cancellation, and responsibility terms. |
 
 ## 2. URL / page cleanup **[Wix dashboard]**
@@ -61,7 +61,7 @@ the embeds' own `<title>`/description tags for consistency):
   Woodbridge, DC, etc.).
 - Category: "Equipment rental agency" (add "Construction equipment supplier").
 - Add the T64 photos, pricing, booking link (terraforgellc.com/book-a-rental),
-  hours (Thu–Sun delivery), phone.
+  hours (weekend delivery every week; weekdays every other week), phone.
 - After every rental, text customers a review link. 10+ reviews with photos
   beats almost any on-page optimization for local queries.
 

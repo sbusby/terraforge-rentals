@@ -17,7 +17,7 @@ period.
 ## 2. Rental period, delivery & pickup
 - We deliver to and pick up from your site; customer transport of the machine is
   not permitted (insurance requirement).
-- Delivery and pickup are available **Thursday through Sunday only**.
+- Delivery and pickup are available **every Saturday and Sunday, plus Monday through Friday on alternating weeks** (holidays included). The booking calendar shows the open days.
 - The rental period runs from delivery day to scheduled pickup day. Keep the
   equipment accessible for pickup; a failed pickup attempt may incur an
   additional delivery fee.

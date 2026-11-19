@@ -10,12 +10,14 @@
  *   - booking widget calls /api/rental and navigates to Stripe directly
  *   - replaces inline JSON-LD with the full per-page set from seo-data.mjs
  *   - adds canonical + og:url, writes sitemap.xml
- *   - generates thank-you.html from the terms page layout
+ *   - generates thank-you.html and 404.html from the terms page layout
+ *   - loads the shared design layer (site/assets/tf.css + tf.js) and its fonts
  *
  * Run: npm run build   (re-run after editing any root *.html page)
  */
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SITE, PAGE_DATA } from './seo-data.mjs';
@@ -49,6 +51,22 @@ const IMAGES = [
   ['ee1515_c6aab9a4247c4b54b29ba2b1c2a22cff~mv2.jpg', 'brush-grapple.jpg'],
 ];
 
+// Shared design layer: site/assets/tf.css + tf.js, cache-busted by content.
+const assetVer = (name) =>
+  createHash('sha1').update(readFileSync(join(OUT, 'assets', name))).digest('hex').slice(0, 10);
+const FONTS =
+  'https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Barlow:wght@400;500;600;700&display=swap';
+const THEME_HEAD = [
+  '<link rel="preconnect" href="https://fonts.googleapis.com">',
+  '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
+  `<link href="${FONTS}" rel="stylesheet">`,
+  '<link rel="icon" type="image/png" href="/images/favicon.png">',
+  // tf-arrive: we got here through tf.js's page transition, so start covered.
+  "<script>(function(d){d.classList.add('tf-js');try{if(sessionStorage.getItem('tfNav')){sessionStorage.removeItem('tfNav');d.classList.add('tf-arrive')}}catch(e){}})(document.documentElement)</script>",
+  `<link rel="stylesheet" href="/assets/tf.css?v=${assetVer('tf.css')}">`,
+].join('\n');
+const THEME_BODY = `<script src="/assets/tf.js?v=${assetVer('tf.js')}" defer></script>`;
+
 function replaceAll(html, from, to) {
   return html.split(from).join(to);
 }
@@ -80,9 +98,18 @@ function transform(html, key) {
       (d) => `<script type="application/ld+json">${JSON.stringify(d)}</script>`
     ),
   ].join('\n');
-  html = mustReplace(html, '</head>', `${head}\n</head>`, `</head> in /${key}`);
+  // Design layer goes last in <head> so it overrides the page's inline CSS.
+  html = html.replace(/<link href="https:\/\/fonts\.googleapis\.com[^>]*>\s*/, '');
+  html = mustReplace(html, '</head>', `${head}\n${THEME_HEAD}\n</head>`, `</head> in /${key}`);
+  html = mustReplace(html, '</body>', `${THEME_BODY}\n</body>`, `</body> in /${key}`);
 
   if (key === 'book-a-rental') html = transformBooking(html);
+  if (key === '') {
+    // Home's quote builder reuses the Delivery page's ZIP → zone lists.
+    const m = /const ZONE_DATA = (\{[\s\S]*?\});/.exec(readFileSync(join(ROOT, 'delivery.html'), 'utf8'));
+    if (!m) throw new Error('build-site: ZONE_DATA not found in delivery.html');
+    html = mustReplace(html, '/*@@ZONE_DATA@@*/null', m[1], 'ZONE_DATA placeholder');
+  }
   return html;
 }
 
@@ -109,20 +136,40 @@ function transformBooking(html) {
   return html;
 }
 
-function thankYouPage(termsHtml) {
-  let html = termsHtml
-    .replace(/<title>[\s\S]*?<\/title>/, '<title>Booking Received | TerraForge Equipment Rentals</title>')
+// The little loader on a strip of ground; tf.js draws the machine into
+// [data-tf-rig] and tf.css animates it (see ".tf-stage").
+const stage = (cls, stamp) =>
+  `<div class="tf-stage ${cls}" aria-hidden="true"><div class="tf-stage-rig" data-tf-rig></div>${
+    stamp ? `<div class="tf-stamp">${stamp}</div>` : ''
+  }</div>`;
+
+/** A one-off page that borrows the terms page's head, nav and footer. */
+function shellPage(termsHtml, { title, description, main }) {
+  const html = termsHtml
+    .replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`)
     .replace(
       /<meta name="description"[^>]*>/,
-      '<meta name="description" content="Your TerraForge rental is booked.">\n<meta name="robots" content="noindex">'
+      `<meta name="description" content="${description}">\n<meta name="robots" content="noindex">`
     )
     .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>\s*/g, '');
-  const main = `<main>
-<section class="hero">
+  return mustReplace(
+    html.replace(/<main>[\s\S]*<\/main>/, '@@MAIN@@'),
+    '@@MAIN@@',
+    `<main>\n${main}\n</main>`,
+    'terms <main> block'
+  );
+}
+
+function thankYouPage(termsHtml) {
+  return shellPage(termsHtml, {
+    title: 'Booking Received | TerraForge Equipment Rentals',
+    description: 'Your TerraForge rental is booked.',
+    main: `<section class="hero">
   <div class="wrap hero-inner">
     <span class="eyebrow">Booking received</span>
     <h1>You're<br><span class="amber">booked.</span></h1>
     <p class="lead">Thanks — your payment went through and your dates are reserved. A receipt is on its way to your email.</p>
+    ${stage('booked', 'Booked')}
   </div>
 </section>
 
@@ -134,14 +181,28 @@ function thankYouPage(termsHtml) {
     <p class="mb-lg">Call or text <a href="tel:+12088630450">(208) 863-0450</a> or email <a href="mailto:seanbusby10@gmail.com">seanbusby10@gmail.com</a>. Cancellations follow the <a href="/terms">Rental Terms</a>.</p>
     <p><a class="btn btn-primary" href="/">Back to home</a></p>
   </div>
-</section>
-</main>`;
-  return mustReplace(
-    html.replace(/<main>[\s\S]*<\/main>/, '@@MAIN@@'),
-    '@@MAIN@@',
-    main,
-    'terms <main> block'
-  );
+</section>`,
+  });
+}
+
+/** Cloudflare Pages serves 404.html (with a 404 status) for unknown paths. */
+function notFoundPage(termsHtml) {
+  return shellPage(termsHtml, {
+    title: 'Page Not Found | TerraForge Equipment Rentals',
+    description: 'That page does not exist.',
+    main: `<section class="hero">
+  <div class="wrap hero-inner">
+    <span class="eyebrow">Error 404 · Nothing parked here</span>
+    <h1>This lot's<br><span class="amber">empty.</span></h1>
+    <p class="lead">We looked everywhere. The page you're after has been moved, hauled off, or never existed — but the T64 is still available.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-primary" href="/book-a-rental">Check availability</a>
+      <a class="btn btn-ghost" href="/">Back to home</a>
+    </div>
+    ${stage('lost', '')}
+  </div>
+</section>`,
+  }).replace(/<link rel="canonical"[^>]*>\n?/, '').replace(/<meta property="og:url"[^>]*>\n?/, '');
 }
 
 function sitemap() {
@@ -165,5 +226,7 @@ for (const [src, [out, key]] of Object.entries(PAGES)) {
 const thanks = transform(readFileSync(join(ROOT, 'terms.html'), 'utf8'), 'thank-you');
 writeFileSync(join(OUT, 'thank-you.html'), thankYouPage(thanks));
 console.log('wrote site/thank-you.html');
+writeFileSync(join(OUT, '404.html'), notFoundPage(thanks));
+console.log('wrote site/404.html');
 writeFileSync(join(OUT, 'sitemap.xml'), sitemap());
 console.log('wrote site/sitemap.xml');

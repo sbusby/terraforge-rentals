@@ -74,6 +74,17 @@ test('away weeks block Mon-Fri every other week, weekends stay open', async () =
   assert.equal(isAwayDay('2026-11-05'), false);  // one week before
   assert.equal(isHandoffDay('2026-11-28'), true);
   assert.equal(validateRange('2026-11-26', '2026-11-28', '2026-11-12').ok, false);
+  // In-town weeks are open every day, Monday included; holidays are not blocked.
+  assert.equal(isHandoffDay('2026-11-30'), true);   // Mon, home week
+  assert.equal(isHandoffDay('2026-12-02'), true);   // Wed, home week
+  assert.equal(isHandoffDay('2026-11-23'), false);  // Mon, away week
+  assert.equal(isHandoffDay('2027-01-01'), true);   // New Year's Day (Fri, home week): holidays are open
+  assert.equal(isHandoffDay('2026-12-26'), true);   // Sat after Christmas (away week, weekend open)
+  assert.equal(validateRange('2026-11-30', '2026-12-02', '2026-11-12').ok, true);
+  // Each in-town stretch runs Saturday through the Sunday nine days later.
+  for (const d of ['2026-11-28', '2026-11-29', '2026-11-30', '2026-12-01', '2026-12-02', '2026-12-03', '2026-12-04', '2026-12-05', '2026-12-06'])
+    assert.equal(isHandoffDay(d), true, d);
+  assert.equal(isHandoffDay('2026-12-07'), false);
   assert.equal(validateRange('2026-11-21', '2026-11-27', '2026-11-12').ok, false);
   assert.equal(validateRange('2026-11-21', '2026-11-28', '2026-11-12').ok, true); // away week in the middle is fine
 });

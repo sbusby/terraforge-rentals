@@ -30,7 +30,7 @@ const business = {
   name: 'TerraForge LLC',
   alternateName: 'TerraForge Rentals',
   description:
-    'Bobcat T64 compact track loader (skid steer) rental with delivery and pickup, serving Virginia job sites within 50 miles of Alexandria, VA (DC and Maryland coming soon). Delivery available Thursday through Sunday, including weekends. Book online with live availability.',
+    'Bobcat T64 compact track loader (skid steer) rental with delivery and pickup, serving Virginia job sites within 50 miles of Alexandria, VA (DC and Maryland coming soon). Delivery available every weekend, plus weekdays every other week; holidays included. Book online with live availability.',
   url: SITE,
   telephone: PHONE,
   email: 'seanbusby10@gmail.com',
@@ -54,7 +54,7 @@ const business = {
   openingHoursSpecification: [
     {
       '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Thursday', 'Friday', 'Saturday', 'Sunday'],
+      dayOfWeek: ['Saturday', 'Sunday'],
       opens: '07:00',
       closes: '19:00',
       description: 'Delivery and pickup days',
@@ -89,7 +89,7 @@ const faq = {
   '@type': 'FAQPage',
   mainEntity: [
     q('How much does it cost to rent a Bobcat T64 near Alexandria, VA?', 'Flat rates: $425 for one day, $750 for a weekend (2 days), and $1,250 for a full week (7 days). We deliver to Virginia job sites only for now; DC and Maryland are coming soon. Delivery and pickup is one flat fee by zone: $275 (0–20 miles), $400 (21–35 miles) or $525 (36–50 miles). Attachments are $65–$110 per day.'),
-    q('Do you deliver the skid steer, or do I need a trailer?', 'We deliver and pick up every rental — you never need a truck or trailer. Delivery and pickup are available Thursday through Sunday, including weekends.'),
+    q('Do you deliver the skid steer, or do I need a trailer?', 'We deliver and pick up every rental — you never need a truck or trailer. Delivery and pickup are available every weekend, plus weekdays every other week, holidays included. The booking calendar shows exactly which days are open.'),
     q('Is there a deposit?', 'Yes. A $600 refundable damage deposit is collected at delivery by card, cash or check and refunded within 5 business days after pickup, per the Rental Terms. It is not charged online.'),
     q('What do I need to rent the machine?', 'You must be 21 or older with a valid driver’s license, agree to the Rental Terms, and have a job site with truck-and-trailer access. No special license is required to operate a compact track loader on private property.'),
     q('What is your cancellation policy?', 'Cancel 48 or more hours before delivery for a full refund minus a $50 booking fee. Inside 48 hours you receive a 50% refund. No-shows are not refunded.'),

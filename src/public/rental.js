@@ -49,15 +49,19 @@ export const CONFIG = {
   },
 
   rules: {
-    // JS Date.getDay(): Sun=0 ... Sat=6. Delivery AND pickup only Thu-Sun.
-    allowedDays: [0, 4, 5, 6],
-    blockedDaysOfWeek: [1, 2, 3], // Mon, Tue, Wed — for DatePicker.disabledDaysOfWeek
+    // JS Date.getDay(): Sun=0 ... Sat=6. Any day of the week can be a delivery
+    // or pickup day; the every-other-week away schedule below is what closes days.
+    // Holidays are open.
+    allowedDays: [0, 1, 2, 3, 4, 5, 6],
+    blockedDaysOfWeek: [], // for DatePicker.disabledDaysOfWeek
     minDays: 1,
     maxDays: 7,
     minLeadDays: 2,     // earliest delivery is 2 days out so you can schedule
     maxAdvanceDays: 180,
-    // Out of town every other week: no delivery or pickup Mon-Fri on those
-    // weeks. Weekends stay open. `anchor` is the Monday of one away week.
+    // Out of Virginia every other week: no delivery or pickup Mon-Fri on those
+    // weeks. Every weekend stays open, so each in-town stretch runs Saturday
+    // through the Sunday nine days later. `anchor` is the Monday of one away
+    // week (Nov 9 2026 away, Nov 16 in town, Nov 23 away, ...).
     awayWeeks: { anchor: '2026-11-09', everyWeeks: 2, days: [1, 2, 3, 4, 5] },
   },
 };
@@ -121,13 +125,13 @@ export function validateRange(startStr, endStr, todayStr) {
   const r = CONFIG.rules;
   if (!startStr || !endStr) return { ok: false, reason: 'Select both a delivery and a return date.' };
   if (!r.allowedDays.includes(dayOfWeek(startStr)))
-    return { ok: false, reason: 'Delivery is available Thursday through Sunday only.' };
+    return { ok: false, reason: 'Delivery is not available on that day.' };
   if (!r.allowedDays.includes(dayOfWeek(endStr)))
-    return { ok: false, reason: 'Pickup is available Thursday through Sunday only.' };
+    return { ok: false, reason: 'Pickup is not available on that day.' };
   if (isAwayDay(startStr))
-    return { ok: false, reason: "We're out of town that week, so no weekday delivery. That weekend is open." };
+    return { ok: false, reason: "We're out of town that week, so no weekday delivery. The weekends on either side are open." };
   if (isAwayDay(endStr))
-    return { ok: false, reason: "We're out of town that week, so no weekday pickup. That weekend is open." };
+    return { ok: false, reason: "We're out of town that week, so no weekday pickup. The weekends on either side are open." };
   const days = rentalDays(startStr, endStr);
   if (days < r.minDays) return { ok: false, reason: 'Return date must be after the delivery date.' };
   if (days > r.maxDays) return { ok: false, reason: `Rentals are limited to ${r.maxDays} days.` };

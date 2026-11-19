@@ -219,10 +219,13 @@ footer .legal{
 <section>
   <div class="wrap">
     <h2 class="mb-lg">ZIP code calculator.</h2>
-    <div class="calc">
-      <label for="zipInput">Your delivery ZIP code</label>
-      <input id="zipInput" inputmode="numeric" maxlength="5" placeholder="e.g. 22043" oninput="checkZip()">
-      <div class="result" id="zipResult"><span class="muted">Enter a 5-digit ZIP to check.</span></div>
+    <div class="tf-split">
+      <div class="calc">
+        <label for="zipInput">Your delivery ZIP code</label>
+        <input id="zipInput" inputmode="numeric" maxlength="5" placeholder="e.g. 22043" oninput="checkZip()">
+        <div class="result" id="zipResult"><span class="muted">Enter a 5-digit ZIP to check.</span></div>
+      </div>
+      <div><div data-tf-radar></div></div>
     </div>
     <p class="muted mt-lg" style="font-size:.85rem;max-width:60ch">Calculator covers Virginia ZIP codes. We don't deliver to DC or Maryland yet (coming soon). If your Virginia ZIP isn't listed, email us and we'll quote you directly — sometimes addresses are just outside the listed zones but we can still deliver.</p>
   </div>
@@ -232,15 +235,15 @@ footer .legal{
   <div class="wrap">
     <h2 class="mb-lg">Three flat rates.</h2>
     <div class="zones">
-      <div class="row">
+      <div class="row" data-tf-zone="1">
         <div><div class="label">Zone 1 · 0–20 mi</div><div class="note">Alexandria, Arlington, Springfield, Fairfax, Mount Vernon</div></div>
         <div class="fee">$275</div>
       </div>
-      <div class="row">
+      <div class="row" data-tf-zone="2">
         <div><div class="label">Zone 2 · 21–35 mi</div><div class="note">Woodbridge, Manassas, Dale City, Lake Ridge</div></div>
         <div class="fee">$400</div>
       </div>
-      <div class="row">
+      <div class="row" data-tf-zone="3">
         <div><div class="label">Zone 3 · 36–50 mi</div><div class="note">Leesburg, Ashburn, Warrenton, Stafford, Fredericksburg</div></div>
         <div class="fee">$525</div>
       </div>

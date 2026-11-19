@@ -260,8 +260,8 @@ $w.onReady(async function () {
   // Elements were added via the editor with default text; set every label from
   // code so the page copy lives here alongside the pricing config.
   const labels = {
-    delivery: 'Delivery date (Thu–Sun)',
-    return: 'Pickup date (Thu–Sun)',
+    delivery: 'Delivery date',
+    return: 'Pickup date',
     zone: 'Delivery zone (from Alexandria, VA 22310)',
     attachOnly: 'Attachments only — no machine',
     forks: `Pallet Forks (+${money(CONFIG.attachments[0].dayRate)}/day)`,
