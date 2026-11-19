@@ -33,7 +33,7 @@ const business = {
     'Bobcat T64 compact track loader (skid steer) rental with delivery and pickup, serving Virginia job sites within 50 miles of Alexandria, VA (DC and Maryland coming soon). Delivery available every weekend, plus weekdays every other week; holidays included. Book online with live availability.',
   url: SITE,
   telephone: PHONE,
-  email: 'seanbusby10@gmail.com',
+  email: 'rentals@terraforgellc.com',
   image: IMG,
   logo: LOGO,
   priceRange: '$425–$1,250',

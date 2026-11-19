@@ -284,14 +284,14 @@ function checkZip(){
   const p = Number(zip.slice(0,3));
   if([200,202,203,204,205].includes(p) || (p>=206 && p<=219)){
     out.classList.remove('hit');
-    out.innerHTML = '<div class="zone">DC &amp; Maryland: coming soon</div><div class="sub">We deliver to Virginia job sites only for now. Email seanbusby10@gmail.com and we\'ll let you know when we start.</div>';
+    out.innerHTML = '<div class="zone">DC &amp; Maryland: coming soon</div><div class="sub">We deliver to Virginia job sites only for now. Email rentals@terraforgellc.com and we\'ll let you know when we start.</div>';
     return;
   }
   let z = null;
   for(const k of [1,2,3]){ if(ZONE_DATA[k].includes(zip)){ z = k; break; } }
   if(!z){
     out.classList.remove('hit');
-    out.innerHTML = '<div class="zone">Not in our standard zones</div><div class="sub">Email us at seanbusby10@gmail.com for a custom delivery quote.</div>';
+    out.innerHTML = '<div class="zone">Not in our standard zones</div><div class="sub">Email us at rentals@terraforgellc.com for a custom delivery quote.</div>';
     return;
   }
   const labels = {1:['Zone 1','$275','0–20 mi from Alexandria'],2:['Zone 2','$400','21–35 mi from Alexandria'],3:['Zone 3','$525','36–50 mi from Alexandria']};
@@ -323,7 +323,7 @@ function checkZip(){
     </div>
     <div class="col">
       <h5>Contact</h5>
-      <a href="mailto:seanbusby10@gmail.com">seanbusby10@gmail.com</a>
+      <a href="mailto:rentals@terraforgellc.com">rentals@terraforgellc.com</a>
       <p class="muted" style="font-size:.82rem;margin-top:8px">Serving Northern Virginia.<br>Response within 24 hours.</p>
     </div>
   </div>

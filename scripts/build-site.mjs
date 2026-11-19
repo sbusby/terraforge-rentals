@@ -178,7 +178,7 @@ function thankYouPage(termsHtml) {
     <h3 class="mb-sm">What happens next</h3>
     <p class="mb-lg">We'll call or text you before delivery to confirm the drop-off window and your delivery zone. The $600 refundable damage deposit is collected at delivery by card, cash, or check — it was not charged online.</p>
     <h3 class="mb-sm">Need to change something?</h3>
-    <p class="mb-lg">Call or text <a href="tel:+12088630450">(208) 863-0450</a> or email <a href="mailto:seanbusby10@gmail.com">seanbusby10@gmail.com</a>. Cancellations follow the <a href="/terms">Rental Terms</a>.</p>
+    <p class="mb-lg">Call or text <a href="tel:+12088630450">(208) 863-0450</a> or email <a href="mailto:rentals@terraforgellc.com">rentals@terraforgellc.com</a>. Cancellations follow the <a href="/terms">Rental Terms</a>.</p>
     <p><a class="btn btn-primary" href="/">Back to home</a></p>
   </div>
 </section>`,

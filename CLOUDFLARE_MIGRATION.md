@@ -6,7 +6,36 @@
 - **Dec 29, 2026:** the plan and the domain registration both end. Without the
   plan, Wix disconnects the custom domain, so cutover must be done by then.
 
-## Status (updated Nov 11)
+## Status (updated Nov 19)
+
+**Cutover done Nov 19, 2026.** `www.terraforgellc.com` is served by Cloudflare Pages.
+- Domain still registered at Wix (shows "Managed externally", renews Dec 29, 2026: **keep that renewal on**).
+  Nameservers: `art.ns.cloudflare.com`, `elma.ns.cloudflare.com`. Unassigned from the Wix site.
+- Cloudflare zone `terraforgellc.com` (Free): `www` CNAME -> `terraforge-rentals.pages.dev` (proxied);
+  bare domain has a placeholder A record (192.0.2.1, proxied) and a Redirect Rule
+  "Bare domain to www" (301, keeps path and query). `www` is the Pages custom domain.
+- Wix's old nameservers (`ns4`/`ns5.wixdns.net`) kept answering for networks that had the old
+  delegation cached (up to 48 h), sending them to Wix, which returned 403. Their leftover records
+  were repointed the same day: `www` CNAME -> `terraforge-rentals.pages.dev`, bare-domain A records
+  -> Cloudflare (104.21.17.123, 172.67.176.192, 104.21.17.124). Harmless to leave.
+- About an hour after cutover the Pages custom domain `www.terraforgellc.com` went **Inactive**
+  (site returned 522 / a Wix error page). It had been added in "My DNS provider (CNAME)" mode
+  because the zone was still pending. Fixed the same day: removed and re-added in Cloudflare DNS
+  mode ("Activate domain"), which Cloudflare manages itself. If it ever shows Inactive again:
+  Workers & Pages -> terraforge-rentals -> Custom domains.
+- Email (Nov 19): Cloudflare Email Routing is on (free). `rentals@terraforgellc.com` and
+  `sean@terraforgellc.com` forward to the owner's Gmail; catch-all is off (other addresses bounce).
+  Cloudflare added the MX, SPF and DKIM records. Receive-only: replying *as* those addresses
+  needs Gmail's "Send mail as" set up separately.
+- Stripe is in **live mode**: live key + webhook secret are in `.dev.vars` and uploaded as Pages
+  secrets. The live webhook points at `https://terraforge-rentals.pages.dev/api/stripe-webhook`
+  (left on pages.dev on purpose so it worked during DNS propagation; it can stay).
+  **`.dev.vars` now holds the live key, so `npm run dev` would create real Stripe sessions.**
+  Swap in a test key for local work (`npm run test:e2e` is unaffected: it uses a fake Stripe).
+- Still to do: one real booking + refund (step 6.3), Search Console sitemap (6.4),
+  merge `cloudflare-migration` into `main` (6.1), cleanup (step 7).
+
+Earlier status, kept for reference:
 
 **Done**
 - [x] Code ported, tested locally (6 unit + 12 end-to-end checks), pushed to the `cloudflare-migration` branch
@@ -24,7 +53,7 @@
       Virginia registration, webhook to `terraforge-rentals.pages.dev`. Test key + webhook secret are in `.dev.vars`.
       A real test checkout through the local site was accepted by Stripe.
 - [x] Stripe receipt emails turned on (Settings → Business → Customer emails → Successful payments)
-- [ ] **Before cutover:** finish Stripe business verification (EIN, bank account) so live payments and payouts work
+- [x] **Before cutover:** finish Stripe business verification (EIN, bank account) so live payments and payouts work
 - [x] Cloudflare: signed in, D1 database created, Pages project `terraforge-rentals` created, secrets uploaded,
       **live at https://terraforge-rentals.pages.dev** (Nov 11). Pages, booking API, Stripe test checkout,
       webhook signature check and admin API all verified on the live site.
@@ -32,7 +61,7 @@
       deploy with `npm run deploy`. Auto-deploy on push can be added later with a GitHub Action.
 - [x] Full test booking on the live Cloudflare site (Nov 11): Stripe test payment → webhook → reservation **confirmed**, dates blocked. $700 rental + $42.00 VA tax (6%) = $742.00
 - [x] Domain decision: **keep it registered at Wix** (renews Nov 29, ~$13); no transfer. Point it at Cloudflare with nameservers at cutover (step 5)
-- [ ] **Once the domain is on Cloudflare, 20 min:** cutover (step 6)
+- [x] **Once the domain is on Cloudflare, 20 min:** cutover (step 6): done Nov 19 except 6.1, 6.3, 6.4
 
 ## What changed in the repo (branch `cloudflare-migration`)
 
