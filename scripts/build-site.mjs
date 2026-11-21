@@ -9,7 +9,10 @@
  *   - static.wixstatic.com images -> /images/...
  *   - booking widget calls /api/rental and navigates to Stripe directly
  *   - replaces inline JSON-LD with the full per-page set from seo-data.mjs
- *   - adds canonical + og:url, writes sitemap.xml
+ *   - adds canonical + Open Graph tags, writes sitemap.xml (with lastmod)
+ *   - generates one service-area page per city in scripts/locations.mjs
+ *     (/skid-steer-rental-<city>-va) and links them from the footer,
+ *     the home page and the Delivery page
  *   - generates thank-you.html and 404.html from the terms page layout
  *   - loads the shared design layer (site/assets/tf.css + tf.js) and its fonts
  *
@@ -18,9 +21,12 @@
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SITE, PAGE_DATA } from './seo-data.mjs';
+import { SITE, PAGE_DATA, locationData } from './seo-data.mjs';
+import { LOCATIONS, locationPath } from './locations.mjs';
+import { CONFIG } from '../src/public/rental.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'site');
@@ -76,7 +82,54 @@ function mustReplace(html, from, to, label) {
   return replaceAll(html, from, to);
 }
 
-function transform(html, key) {
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+const usd = (n) => '$' + n.toLocaleString('en-US');
+
+// ZIP -> zone lists live in delivery.html (the ZIP calculator); one source.
+const ZONE_JSON = (() => {
+  const m = /const ZONE_DATA = (\{[\s\S]*?\});/.exec(readFileSync(join(ROOT, 'delivery.html'), 'utf8'));
+  if (!m) throw new Error('build-site: ZONE_DATA not found in delivery.html');
+  return m[1];
+})();
+const ZONE_DATA = JSON.parse(ZONE_JSON);
+
+/** A city's delivery zone (1-3); every ZIP listed for it must agree. */
+function zoneOf(loc) {
+  const zones = new Set(
+    loc.zips.map((zip) => {
+      const z = [1, 2, 3].find((k) => ZONE_DATA[k].includes(zip));
+      if (!z) throw new Error(`build-site: ${loc.city} ZIP ${zip} is not in the ZIP calculator`);
+      return z;
+    })
+  );
+  if (zones.size !== 1) throw new Error(`build-site: ${loc.city} ZIPs span more than one delivery zone`);
+  return [...zones][0];
+}
+
+const LOCS = LOCATIONS.map((loc) => ({ ...loc, path: locationPath(loc), zone: zoneOf(loc) }));
+const locBySlug = Object.fromEntries(LOCS.map((l) => [l.slug, l]));
+const cityLink = (l, text) => `<a href="/${l.path}">${text || l.city}</a>`;
+
+/** "Service areas" footer column: internal links to every city page. */
+const FOOTER_AREAS = `<div class="col">
+      <h5>Service Areas</h5>
+      ${LOCS.slice(0, 6).map((l) => cityLink(l)).join('\n      ')}
+      <a href="/delivery#areas">All service areas</a>
+    </div>
+    `;
+
+/** Link block listing every city page, grouped by delivery zone. */
+function areaLinks() {
+  return [1, 2, 3]
+    .map((z) => {
+      const fee = CONFIG.zones[z - 1].fee;
+      const links = LOCS.filter((l) => l.zone === z).map((l) => cityLink(l, `Skid steer rental in ${l.city}`));
+      return `<div class="row"><div class="k">Zone ${z} · ${usd(fee)} delivery &amp; pickup</div><div class="v">${links.join(' · ')}</div></div>`;
+    })
+    .join('\n      ');
+}
+
+function transform(html, key, data = PAGE_DATA[key] || []) {
   // Images. og:image must stay absolute for social previews.
   for (const [wix, local] of IMAGES) {
     html = replaceAll(html, `content="${WIX_MEDIA}${wix}"`, `content="${SITE}/images/${local}"`);
@@ -91,10 +144,20 @@ function transform(html, key) {
   // Structured data: drop the inline copies, inject the full per-page set.
   html = html.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>\s*/g, '');
   const url = `${SITE}/${key}`;
+  const og = [];
+  if (!html.includes('property="og:title"')) {
+    const title = /<title>([\s\S]*?)<\/title>/.exec(html)?.[1];
+    const desc = /<meta name="description" content="([^"]*)"/.exec(html)?.[1];
+    if (title) og.push(`<meta property="og:title" content="${title.replace(/"/g, '&quot;')}">`);
+    if (desc) og.push(`<meta property="og:description" content="${desc}">`);
+    og.push(`<meta property="og:image" content="${SITE}/images/t64-og.jpg">`, '<meta property="og:type" content="website">');
+  }
   const head = [
     `<link rel="canonical" href="${url}">`,
     `<meta property="og:url" content="${url}">`,
-    ...(PAGE_DATA[key] || []).map(
+    '<meta property="og:site_name" content="TerraForge Equipment Rentals">',
+    ...og,
+    ...data.map(
       (d) => `<script type="application/ld+json">${JSON.stringify(d)}</script>`
     ),
   ].join('\n');
@@ -103,14 +166,133 @@ function transform(html, key) {
   html = mustReplace(html, '</head>', `${head}\n${THEME_HEAD}\n</head>`, `</head> in /${key}`);
   html = mustReplace(html, '</body>', `${THEME_BODY}\n</body>`, `</body> in /${key}`);
 
+  // Site-wide internal links to the city pages.
+  html = html.replace(/<div class="col">\s*<h5>Contact<\/h5>/, (m) => FOOTER_AREAS + m);
+  if (!html.includes('<h5>Service Areas</h5>')) throw new Error(`build-site: footer not found in /${key}`);
+
   if (key === 'book-a-rental') html = transformBooking(html);
+  if (key === 'delivery') html = mustReplace(html, '<!--@@AREA_LINKS@@-->', areaLinks(), 'AREA_LINKS placeholder');
   if (key === '') {
     // Home's quote builder reuses the Delivery page's ZIP → zone lists.
-    const m = /const ZONE_DATA = (\{[\s\S]*?\});/.exec(readFileSync(join(ROOT, 'delivery.html'), 'utf8'));
-    if (!m) throw new Error('build-site: ZONE_DATA not found in delivery.html');
-    html = mustReplace(html, '/*@@ZONE_DATA@@*/null', m[1], 'ZONE_DATA placeholder');
+    html = mustReplace(html, '/*@@ZONE_DATA@@*/null', ZONE_JSON, 'ZONE_DATA placeholder');
+    // Zone list: city names that have their own page become links to it.
+    html = html.replace(/<div class="mi">([^<]*)<\/div>/g, (_, names) =>
+      `<div class="mi">${names
+        .split(' · ')
+        .map((n) => {
+          const l = LOCS.find((x) => x.city === n.trim());
+          return l ? cityLink(l) : n;
+        })
+        .join(' · ')}</div>`
+    );
   }
   return html;
+}
+
+/**
+ * Service-area page for one city. Borrows the Delivery page's head, nav and
+ * footer; prices and the delivery fee come from CONFIG and the city's zone.
+ */
+function cityPage(loc) {
+  const fee = CONFIG.zones[loc.zone - 1].fee;
+  const miles = ['0–20', '21–35', '36–50'][loc.zone - 1];
+  const p = CONFIG.machine.prices;
+  const rates = [
+    ['1 day', p[1]],
+    ['Weekend · 2 days', p[2]],
+    ['Full week · 7 days', p[7]],
+  ];
+  const att = CONFIG.attachments.map((a) => a.dayRate);
+  const attRange = `${usd(Math.min(...att))}–${usd(Math.max(...att))}`;
+  const deposit = usd(CONFIG.deposit.amount);
+  const title = `Skid Steer Rental ${loc.city}, VA — Bobcat T64 Delivered | TerraForge`;
+  const description = `Rent a Bobcat T64 skid steer (compact track loader) in ${loc.city}, VA. Delivered and picked up, weekends included. From ${usd(p[1])}/day plus ${usd(fee)} flat delivery. Book online.`;
+  const { faqs, jsonld } = locationData(loc, { fee, miles, prices: p, attRange, deposit, usd });
+  const faqCss = (readFileSync(join(ROOT, 'faq.html'), 'utf8').match(/^\.faq.*$/gm) || []).join('\n');
+
+  const main = `<section class="hero">
+  <div class="wrap hero-inner">
+    <h1><span class="eyebrow">Delivered · ${esc(loc.county)}</span>Skid steer rental<br><span class="amber">${esc(loc.city)}, VA.</span></h1>
+    <p class="lead">${esc(loc.intro)}</p>
+    <div class="hero-ctas">
+      <a class="btn btn-primary" href="/book-a-rental">Check availability</a>
+      <a class="btn btn-ghost" href="/equipment">See the machine</a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="mb-md">What it costs in ${esc(loc.city)}.</h2>
+    <p class="lead mb-lg">Flat rental rates plus one ${usd(fee)} delivery fee that covers both drop-off and pickup. ${esc(loc.city)} is in delivery Zone ${loc.zone} (${miles} miles from our Alexandria yard).</p>
+    <div class="zones">
+      ${rates
+        .map(
+          ([label, price]) =>
+            `<div class="row"><div><div class="label">${label}</div><div class="note">${usd(price)} rental + ${usd(fee)} delivery &amp; pickup</div></div><div class="fee">${usd(price + fee)}</div></div>`
+        )
+        .join('\n      ')}
+    </div>
+    <p class="muted mt-lg" style="font-size:.85rem;max-width:70ch">Totals are before sales tax, which is shown at checkout before you pay. Standard 80-inch bucket included. <a href="/attachments">Pallet forks, brush grapple and stump bucket</a> are ${attRange} per day. A ${deposit} refundable damage deposit is collected at delivery, not online. See <a href="/requirements">rental requirements</a>.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="mb-lg">What people rent it for in ${esc(loc.city)}.</h2>
+    <div class="list">
+      ${loc.jobs.map(([k, v]) => `<div class="row"><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div></div>`).join('\n      ')}
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="mb-md">Delivery to ${esc(loc.city)}.</h2>
+    <p class="lead mb-md">We deliver and pick up every weekend, plus weekdays every other week, holidays included. The <a href="/book-a-rental">booking calendar</a> shows which days are open.</p>
+    <div class="list">
+      <div class="row"><div class="k">Areas covered</div><div class="v">${esc(loc.places)}.</div></div>
+      <div class="row"><div class="k">ZIP codes</div><div class="v">${loc.zips.join(' · ')}. Somewhere else? <a href="/delivery">Check your ZIP</a>.</div></div>
+      <div class="row"><div class="k">Getting the machine in</div><div class="v">${esc(loc.access)}</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="mb-lg">${esc(loc.city)} rental questions.</h2>
+    <div class="faq">
+      ${faqs.map(([q, a]) => `<details><summary>${esc(q)}</summary><div class="body"><p>${esc(a)}</p></div></details>`).join('\n      ')}
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap center">
+    <h2 class="mb-md">Book the T64 for ${esc(loc.city)}.</h2>
+    <p class="lead mb-lg" style="margin-left:auto;margin-right:auto">Live availability and your exact total online, in about three minutes.</p>
+    <p class="mb-lg"><a class="btn btn-primary" href="/book-a-rental">Check availability</a></p>
+    <p class="muted" style="font-size:.88rem">Also delivering to ${loc.nearby
+      .map((s) => {
+        if (!locBySlug[s]) throw new Error(`build-site: unknown nearby city "${s}" for ${loc.city}`);
+        return cityLink(locBySlug[s]);
+      })
+      .join(' · ')} · <a href="/delivery#areas">all service areas</a></p>
+  </div>
+</section>`;
+
+  // Title and description go in first so transform() builds the OG tags from them.
+  const html = transform(
+    readFileSync(join(ROOT, 'delivery.html'), 'utf8')
+      .replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`)
+      .replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${esc(description)}">`)
+      .replace('<!--@@AREA_LINKS@@-->', ''),
+    loc.path,
+    jsonld
+  )
+    .replace(' class="active">Delivery</a>', ' class="">Delivery</a>')
+    .replace('</style>', `${faqCss}\n</style>`);
+  return mustReplace(html.replace(/<main>[\s\S]*<\/main>/, '@@MAIN@@'), '@@MAIN@@', `<main>\n${main}\n</main>`, 'delivery <main> block');
 }
 
 function transformBooking(html) {
@@ -205,8 +387,26 @@ function notFoundPage(termsHtml) {
   }).replace(/<link rel="canonical"[^>]*>\n?/, '').replace(/<meta property="og:url"[^>]*>\n?/, '');
 }
 
+/** Date a page's sources last changed: today if uncommitted, else last commit. */
+function lastmod(...files) {
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    const git = (...args) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' }).trim();
+    if (git('status', '--porcelain', '--', ...files)) return today;
+    return git('log', '-1', '--format=%cs', '--', ...files) || today;
+  } catch {
+    return today;
+  }
+}
+
 function sitemap() {
-  const urls = Object.values(PAGES).map(([, key]) => `  <url><loc>${SITE}/${key}</loc></url>`);
+  const shared = ['scripts/build-site.mjs', 'scripts/seo-data.mjs', 'site/assets/tf.css'];
+  const entry = (key, date) => `  <url><loc>${SITE}/${key}</loc><lastmod>${date}</lastmod></url>`;
+  const cityDate = lastmod('scripts/locations.mjs', 'delivery.html', 'src/public/rental.js', ...shared);
+  const urls = [
+    ...Object.entries(PAGES).map(([src, [, key]]) => entry(key, lastmod(src, ...shared))),
+    ...LOCS.map((l) => entry(l.path, cityDate)),
+  ];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.join('\n')}
@@ -222,6 +422,10 @@ for (const [src, [out, key]] of Object.entries(PAGES)) {
   }
   writeFileSync(join(OUT, out), html);
   console.log(`wrote site/${out}`);
+}
+for (const loc of LOCS) {
+  writeFileSync(join(OUT, `${loc.path}.html`), cityPage(loc));
+  console.log(`wrote site/${loc.path}.html`);
 }
 const thanks = transform(readFileSync(join(ROOT, 'terms.html'), 'utf8'), 'thank-you');
 writeFileSync(join(OUT, 'thank-you.html'), thankYouPage(thanks));

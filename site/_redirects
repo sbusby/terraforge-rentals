@@ -1,5 +1,6 @@
 # Old Wix page URLs -> their new homes (301 keeps search ranking)
 /home                   /                 301
+/blank                  /book-a-rental    301
 /book-online            /book-a-rental    301
 /booking-calendar       /book-a-rental    301
 /booking-form           /book-a-rental    301

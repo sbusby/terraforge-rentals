@@ -114,6 +114,9 @@ p.lead{color:#d9d3c8}
 }
 .eyebrow::before{content:"";flex:0 0 34px;height:8px;background:var(--hazard)}
 .center .eyebrow{justify-content:center}
+/* Keyword line inside an <h1>: looks like a normal eyebrow, counts as heading text. */
+h1 .eyebrow{line-height:1.5;margin-bottom:18px;color:var(--amber);text-transform:uppercase}
+.tf-js .hero h1 .eyebrow{animation:none}
 
 /* numbered section headings */
 main{counter-reset:tfsec}
